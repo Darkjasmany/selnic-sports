@@ -1,0 +1,132 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      Role     @default(ORGANIZER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum Role {
+  ADMIN
+  ORGANIZER
+}
+
+model Category {
+  id      String   @id @default(cuid())
+  name    String   @unique  // Sub12, Sub15, Sub18, Mayores
+  teams   Team[]
+}
+
+model Team {
+  id         String        @id @default(cuid())
+  name       String
+  categoryId String
+  category   Category      @relation(fields: [categoryId], references: [id])
+  players    TeamPlayer[]
+  homeMatches Match[]      @relation("HomeTeam")
+  awayMatches Match[]      @relation("AwayTeam")
+  createdAt  DateTime      @default(now())
+}
+
+model Player {
+  id               String        @id @default(cuid())
+  firstName        String
+  lastName         String
+  birthDate        DateTime
+  documentId       String        @unique
+  photoUrl         String?
+  biometricData    Json?         // Descriptores faciales hoy, template después
+  biometricType    BiometricType @default(FACIAL)
+  teams            TeamPlayer[]
+  matchValidations MatchValidation[]
+  incidents        MatchIncident[]
+  createdAt        DateTime      @default(now())
+}
+
+enum BiometricType {
+  FACIAL
+  FINGERPRINT  // Para cuando llegue el lector
+}
+
+model TeamPlayer {
+  id        String   @id @default(cuid())
+  teamId    String
+  playerId  String
+  team      Team     @relation(fields: [teamId], references: [id])
+  player    Player   @relation(fields: [playerId], references: [id])
+  isActive  Boolean  @default(true)
+  joinedAt  DateTime @default(now())
+
+  @@unique([teamId, playerId])
+}
+
+model Match {
+  id           String      @id @default(cuid())
+  homeTeamId   String
+  awayTeamId   String
+  homeTeam     Team        @relation("HomeTeam", fields: [homeTeamId], references: [id])
+  awayTeam     Team        @relation("AwayTeam", fields: [awayTeamId], references: [id])
+  categoryId   String
+  status       MatchStatus @default(PENDING)
+  scheduledAt  DateTime
+  notes        String?
+  validations  MatchValidation[]
+  incidents    MatchIncident[]
+  createdAt    DateTime    @default(now())
+}
+
+enum MatchStatus {
+  PENDING              // Creado
+  VALIDATING_PLAYERS   // Validando los 22
+  IN_PROGRESS          // Todos validados, llenando incidencias
+  FINISHED             // Cerrado
+}
+
+model MatchValidation {
+  id          String   @id @default(cuid())
+  matchId     String
+  playerId    String
+  match       Match    @relation(fields: [matchId], references: [id])
+  player      Player   @relation(fields: [playerId], references: [id])
+  validatedAt DateTime @default(now())
+  teamSide    TeamSide // HOME o AWAY
+
+  @@unique([matchId, playerId])
+}
+
+enum TeamSide {
+  HOME
+  AWAY
+}
+
+model MatchIncident {
+  id       String       @id @default(cuid())
+  matchId  String
+  playerId String
+  match    Match        @relation(fields: [matchId], references: [id])
+  player   Player       @relation(fields: [playerId], references: [id])
+  type     IncidentType
+  minute   Int?
+}
+
+enum IncidentType {
+  YELLOW_CARD
+  RED_CARD
+}
