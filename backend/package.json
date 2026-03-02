@@ -4,9 +4,12 @@
   "description": "Sistema de registro de jugadores de fútbol",
   "main": "dist/server.js",
   "scripts": {
-    "dev": "tsx watch src/server.ts",
-    "build": "tsc",
-    "start": "node dist/server.js",
+    "dev": "tsx --env-file=.env --watch src/server.ts",
+    "build": "tsup src/server.ts --format esm --clean --sourcemap",
+    "start": "node --env-file=.env ./dist/server.js",
+    "dev1": "tsx watch src/server.ts",
+    "build1": "tsc",
+    "start1": "node dist/server.js",
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
     "db:seed": "tsx prisma/seed.ts",
@@ -30,10 +33,12 @@
     "@vitest/ui": "^4.0.18",
     "eslint": "^10.0.2",
     "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.5",
     "prettier": "^3.8.1",
     "prisma": "^7.4.1",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
+    "typescript-eslint": "^8.56.1",
     "vitest": "^4.0.18"
   },
   "dependencies": {
