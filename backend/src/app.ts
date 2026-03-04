@@ -1,6 +1,7 @@
 import cors from "cors";
 import express, { Application } from "express";
 import helmet from "helmet";
+import { errorMiddleware } from "./middlewares/error.middleware";
 
 const app: Application = express();
 
@@ -30,5 +31,7 @@ app.get("/health", (_req, res) => {
 // app.use('/api/players', playersRouter)
 // app.use('/api/teams', teamsRouter)
 // app.use('/api/matches', matchesRouter)
+
+app.use(errorMiddleware);
 
 export default app;
