@@ -1,4 +1,5 @@
-import { PrismaClient } from "@prisma/client";
+// import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "../generated/prisma";
 
 // Aquí estamos usando globalThis (un objeto que persiste mientras el proceso de Node.js esté vivo, incluso si los módulos se recargan). Le decimos a TypeScript: "Oye, en el objeto global puede que exista una propiedad llamada prisma"
 
@@ -10,7 +11,7 @@ const globalForPrisma = globalThis as unknown as {
 export const prisma =
   globalForPrisma.prisma ??
   new PrismaClient({
-    log: ["query", "error", "warn"],
+    log: process.env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
   });
 
 //   En Desarrollo: Guardamos la instancia en el objeto global. Así, cuando guardes un archivo y todo se recargue, el paso #2 encontrará la instancia anterior y no creará una nueva.
