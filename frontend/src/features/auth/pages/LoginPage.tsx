@@ -11,7 +11,7 @@ import { authenticateUser } from "../api/auth.api";
 import { loginSchema, type LoginInput } from "../schema/auth.schema";
 
 export default function LoginPage() {
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(true);
   const navigate = useNavigate();
 
   const {

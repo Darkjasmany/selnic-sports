@@ -13,9 +13,8 @@ type LoginResponse = {
 
 export async function authenticateUser(formData: LoginInput) {
   try {
-    const url = "/auht/login";
-    const { data } = await api.post<LoginResponse>(url, formData);
-    // Guardar en Zustand para mantener la sesión
+    const { data } = await api.post<LoginResponse>("/auth/login", formData);
+    // Guardar en Zustand para mantener la sesión data.data porque axios ya desenvuelve un nivel y el backend envuelve en { success, data: {...} }
     useAuthStore.getState().setAuth(data.data.user, data.data.token);
     return data.data;
   } catch (error) {
