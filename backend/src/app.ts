@@ -3,6 +3,7 @@ import express, { Application } from "express";
 import helmet from "helmet";
 import { errorMiddleware } from "./middlewares/error.middleware";
 import authRouter from "./modules/auth/auth.router";
+import categoryRouter from "./modules/categories/category.router";
 
 const app: Application = express();
 
@@ -29,6 +30,7 @@ app.get("/health", (_req, res) => {
 
 // Aquí irán tus rutas cuando las vayas creando
 app.use("/api/auth", authRouter);
+app.use("/api/categories", categoryRouter);
 // app.use('/api/players', playersRouter)
 // app.use('/api/teams', teamsRouter)
 // app.use('/api/matches', matchesRouter)
