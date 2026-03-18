@@ -1,5 +1,7 @@
 import { AuthRoutes } from "@/features/auth/AuthRoutes";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import DashboardLayout from "./layouts/DashboardLayout";
+import Dashboard from "./pages/Dashboard";
 import { useAuthStore } from "./store/auth.store";
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
@@ -16,10 +18,18 @@ export default function Router() {
           path="/"
           element={
             <PrivateRoute>
-              <div className="text-white p-8">✅ Dashboard — autenticado correctamente</div>
+              <DashboardLayout />
             </PrivateRoute>
           }
-        />
+        >
+          <Route index element={<Dashboard />} />
+          {/* Aquí irán las rutas de cada módulo cuando los construyamos */}
+          {/* <Route path="players" element={<PlayersPage />} /> */}
+          {/* <Route path="teams" element={<TeamsPage />} /> */}
+          {/* <Route path="matches/*" element={<MatchesRoutes />} /> */}
+          {/* <Route path="admin/users" element={<UsersPage />} /> */}
+          {/* <Route path="admin/categories" element={<CategoriesPage />} /> */}
+        </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
