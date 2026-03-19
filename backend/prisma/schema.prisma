@@ -36,14 +36,17 @@ model Category {
 }
 
 model Team {
-  id         String        @id @default(cuid())
-  name       String
-  categoryId String
-  category   Category      @relation(fields: [categoryId], references: [id])
-  players    TeamPlayer[]
-  homeMatches Match[]      @relation("HomeTeam")
-  awayMatches Match[]      @relation("AwayTeam")
-  createdAt  DateTime      @default(now())
+  id           String       @id @default(cuid())
+  name         String
+  categoryId   String
+  location     String?
+  managerPhone String?
+  coachName    String?
+  category     Category     @relation(fields: [categoryId], references: [id])
+  players      TeamPlayer[]
+  homeMatches  Match[]      @relation("HomeTeam")
+  awayMatches  Match[]      @relation("AwayTeam")
+  createdAt    DateTime     @default(now())
 }
 
 model Player {

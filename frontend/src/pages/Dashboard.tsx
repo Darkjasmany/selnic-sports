@@ -27,21 +27,27 @@ const cards: DashboardCard[] = [
   },
 ];
 
-const Dashboard = () => {
+export default function Dashboard() {
   const { user } = useAuthStore();
   const navigate = useNavigate();
+
   return (
     <div>
-      <div className="mb-8 ">
-        <h1 className="font-semibold text-white">Bienvenido {user?.name} 👋</h1>
+      <div className="mb-8">
+        <h1 className="text-2xl font-semibold text-white">Bienvenido, {user?.name} 👋</h1>
         <p className="text-slate-400 mt-1">Sistema de registro y validación de jugadores</p>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap6 max-w-2xl">
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl">
         {cards.map(card => (
           <button
             key={card.path}
             onClick={() => navigate(card.path)}
-            className={`bg-slate-900 border border-slate-800 rounded-xl p-6 text-left transition-all duration-200 hover:scale-[1.02] ${card.color} cursor-pointer group`}
+            className={`
+              bg-slate-900 border border-slate-800 rounded-xl p-6 text-left
+              transition-all duration-200 hover:scale-[1.02] ${card.color}
+              cursor-pointer group
+            `}
           >
             <div className="text-4xl mb-4">{card.icon}</div>
             <h2 className="text-lg font-medium text-white mb-2 group-hover:text-sky-400 transition-colors">
@@ -53,6 +59,4 @@ const Dashboard = () => {
       </div>
     </div>
   );
-};
-
-export default Dashboard;
+}
