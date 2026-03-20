@@ -1,7 +1,6 @@
 import api from "@/api/client";
 import { useAuthStore } from "@/store/auth.store";
 import { isAxiosError } from "axios";
-import type { LoginInput } from "../schema/auth.schema";
 
 type LoginResponse = {
   success: boolean;
@@ -9,6 +8,11 @@ type LoginResponse = {
     user: { id: string; name: string; email: string; role: string };
     token: string;
   };
+};
+
+export type LoginInput = {
+  email: string;
+  password: string;
 };
 
 export async function authenticateUser(formData: LoginInput) {

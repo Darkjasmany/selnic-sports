@@ -1,7 +1,6 @@
 import LoginPage from "@/features/auth/pages/LoginPage";
 import AuthLayout from "@/layouts/AuthLayout";
 import { Navigate, Route, Routes } from "react-router-dom";
-import RegisterPage from "./pages/RegisterPage";
 
 export function AuthRoutes() {
   return (
@@ -9,7 +8,6 @@ export function AuthRoutes() {
       <Route element={<AuthLayout />}>
         {/* Aquí van las rutas de autenticación */}
         <Route path="login" element={<LoginPage />} />
-        <Route path="register" element={<RegisterPage />} />
 
         {/* Si el usuario entra a "/auth" (sin nada más), lo redirigimos automáticamente al login.*/}
         <Route path="" element={<Navigate to="login" replace />} />
