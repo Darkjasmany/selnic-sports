@@ -4,7 +4,7 @@ import { Router } from "express";
 import { CategoryController } from "./category.controller";
 import { updateCategorySchema } from "./category.schema";
 
-const router = Router();
+const router: Router = Router();
 
 router.use(authenticate); // Aplica autenticación a todas las rutas de categorías
 
