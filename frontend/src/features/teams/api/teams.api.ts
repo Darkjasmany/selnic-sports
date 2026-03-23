@@ -1,5 +1,5 @@
 import api from "@/api/client";
-import { isAxiosError } from "axios";
+import { handleError } from "@/api/utils";
 
 export type Team = {
   id: string;
@@ -21,13 +21,6 @@ export type CreateTeamInput = {
 };
 
 export type UpdateTeamInput = Partial<CreateTeamInput>;
-
-function handleError(error: unknown): never {
-  if (isAxiosError(error) && error.response) {
-    throw new Error(error.response.data.message ?? "Error en la operación");
-  }
-  throw error;
-}
 
 export async function getTeams(categoryId?: string): Promise<Team[]> {
   try {

@@ -1,5 +1,6 @@
 import { AuthRoutes } from "@/features/auth/AuthRoutes";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import CategoriesPage from "./features/categories/pages/CategoriesPage";
 import TeamsPage from "./features/teams/pages/TeamsPage";
 import DashboardLayout from "./layouts/DashboardLayout";
 import Dashboard from "./pages/Dashboard";
@@ -30,7 +31,7 @@ export default function Router() {
           {/* <Route path="players" element={<PlayersPage />} /> */}
           {/* <Route path="matches/*" element={<MatchesRoutes />} /> */}
           {/* <Route path="admin/users" element={<UsersPage />} /> */}
-          {/* <Route path="admin/categories" element={<CategoriesPage />} /> */}
+          <Route path="admin/categories" element={<CategoriesPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
