@@ -10,24 +10,23 @@ type CategoryFormValue = z.infer<typeof categorySchema>;
 
 type Props = {
   onSubmit: (data: CategoryFormValue) => void;
-  isPending: boolean; // Corregido el typo de "isPendig"
-  initialName?: string;
+  isPending: boolean;
 };
 
-const CategoryForm = ({ onSubmit, isPending, initialName = "" }: Props) => {
+const CategoryForm = ({ isPending, onSubmit }: Props) => {
   const {
     register,
-    handleSubmit,
     reset,
+    handleSubmit,
     formState: { errors },
   } = useForm<CategoryFormValue>({
     resolver: zodResolver(categorySchema),
-    defaultValues: { name: initialName },
+    defaultValues: { name: "" },
   });
 
   const handleInternalSubmit = (data: CategoryFormValue) => {
     onSubmit(data);
-    reset(); // Limpia el form tras enviar
+    reset();
   };
 
   return (
@@ -37,17 +36,17 @@ const CategoryForm = ({ onSubmit, isPending, initialName = "" }: Props) => {
           {...register("name")}
           type="text"
           placeholder="Ej: Sub12, Sub15, Mayores..."
-          className="h-10 px-3 rounded-lg bg-slate-800 border border-slate-700 text-white flex-1"
+          className="h-10 px-3 rounded-lg bg-slate-800 border border-slate-700 text-white flex-1 focus:ring-2 focus:ring-sky-500 outline-none transition"
         />
         <button
           type="submit"
           disabled={isPending}
-          className="px-4 bg-sky-600 rounded-lg text-white disabled:opacity-50"
+          className="h-10 px-4 bg-sky-600 hover:bg-sky-500 disabled:opacity-50 text-white text-sm font-medium rounded-lg transition"
         >
           {isPending ? "Agregando..." : "Agregar"}
         </button>
       </div>
-      {errors.name && <span className="text-red-400 text-xs">{errors.name.message}</span>}
+      {errors.name && <span className="text-red-400 text-xs mt-1">{errors.name.message}</span>}
     </form>
   );
 };

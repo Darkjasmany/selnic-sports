@@ -25,27 +25,6 @@ const CategoriesPage = () => {
     createCategory.mutate(data.name);
   };
 
-  // const handleStartEditing = (category: Category) => {
-  //   setEditingCategoryId(category.id);
-  //   setEditingName(category.name);
-  // };
-
-  // const handleCancelEdit = () => {
-  //   setEditingCategoryId(null);
-  //   setEditingName("");
-  // };
-
-  // const handleUpdate = (id: string) => {
-  //   if (!editingName.trim()) return;
-  //   updateCategory.mutate({ id, name: editingName.trim() }, { onSuccess: () => handleCancelEdit });
-  // };
-
-  // const handleDelete = (category: Category) => {
-  //   if (category._count.teams > 0) return;
-  //   if (!window.confirm(`¿Eliminar la categoría "${category.name}"?`)) return;
-  //   deleteCategory.mutate(category.id);
-  // };
-
   return (
     <div>
       <div className="mb-6">
@@ -73,7 +52,6 @@ const CategoriesPage = () => {
           isLoading={isLoading}
           onDelete={id => deleteCategory.mutate(id)}
           onUpdate={(id, name) => updateCategory.mutate({ id, name })}
-          isUpdating={updateCategory.isPending}
         />
       </div>
     </div>

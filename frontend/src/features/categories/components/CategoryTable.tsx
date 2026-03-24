@@ -6,87 +6,105 @@ type Props = {
   isLoading: boolean;
   onDelete: (id: string) => void;
   onUpdate: (id: string, name: string) => void;
-  isUpdating: boolean;
 };
 
-const CategoryTable = ({ categories, isLoading, onDelete, onUpdate, isUpdating }: Props) => {
+const CategoryTable = ({ categories, isLoading, onDelete, onUpdate }: Props) => {
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [editName, setEditName] = useState("");
+  const [editingName, setEditingName] = useState("");
 
-  const startEdit = (cat: Category) => {
-    setEditingId(cat.id);
-    setEditName(cat.name);
+  const handleStartEdit = (category: Category) => {
+    setEditingId(category.id);
+    setEditingName(category.name);
   };
 
-  const cancelEdit = () => {
+  const handleCancelEdit = () => {
     setEditingId(null);
-    setEditName("");
+    setEditingName("");
   };
 
   const handleSave = (id: string) => {
-    if (!editName.trim()) return;
-    onUpdate(id, editName.trim());
-    setEditingId(null);
+    if (!editingName.trim()) return;
+    onUpdate(id, editingName.trim());
+    handleCancelEdit();
   };
 
-  if (isLoading) return <div className="p-10 text-center text-slate-400">Cargando...</div>;
+  if (isLoading) {
+    return <div className="py-16 text-center text-slate-400">Cargando categorías...</div>;
+  }
+
+  if (categories.length === 0) {
+    return <div className="py-16 text-center text-slate-400">No hay categorías registradas</div>;
+  }
 
   return (
     <table className="w-full text-sm">
       <thead>
-        <tr className="border-b border-slate-800 text-slate-400">
-          <th className="text-left py-3 px-4 font-medium">Nombre</th>
-          <th className="text-left py-3 px-4 font-medium">Equipos</th>
-          <th className="text-right py-3 px-4 font-medium">Acciones</th>
+        <tr className="border-b border-slate-800">
+          <th className="text-left py-3 px-4 text-slate-400 font-medium">#</th>
+          <th className="text-left py-3 px-4 text-slate-400 font-medium">Nombre</th>
+          <th className="text-left py-3 px-4 text-slate-400 font-medium">Equipos</th>
+          <th className="text-right py-3 px-4 text-slate-400 font-medium">Acciones</th>
         </tr>
       </thead>
       <tbody>
-        {categories.map(cat => (
-          <tr key={cat.id} className="border-b border-slate-800/50 hover:bg-slate-800/20">
+        {categories.map((category, index) => (
+          <tr
+            key={category.id}
+            className="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors"
+          >
+            <td className="py-3 px-4 text-slate-500">{index + 1}</td>
             <td className="py-3 px-4">
-              {editingId === cat.id ? (
+              {editingId === category.id ? (
                 <input
                   autoFocus
-                  value={editName}
-                  onChange={e => setEditName(e.target.value)}
-                  onKeyDown={e => e.key === "Enter" && handleSave(cat.id)}
-                  className="bg-slate-800 border border-sky-500 text-white px-2 py-1 rounded outline-none"
+                  value={editingName}
+                  onChange={e => setEditingName(e.target.value)}
+                  onKeyDown={e => {
+                    if (e.key === "Enter") handleSave(category.id);
+                    if (e.key === "Escape") handleCancelEdit();
+                  }}
+                  className="h-8 px-2 rounded bg-slate-800 border border-sky-500 text-white outline-none"
                 />
               ) : (
-                <span className="text-white font-medium">{cat.name}</span>
+                <span className="text-white font-medium">{category.name}</span>
               )}
             </td>
             <td className="py-3 px-4">
-              <span className="text-slate-500 bg-slate-800/50 px-2 py-0.5 rounded text-xs">
-                {cat._count.teams} equipos
+              <span className="bg-slate-800 text-slate-400 text-xs px-2 py-1 rounded-md">
+                {category._count?.teams || 0} equipo(s)
               </span>
             </td>
             <td className="py-3 px-4 text-right">
-              <div className="flex justify-end gap-2">
-                {editingId === cat.id ? (
+              <div className="flex items-center justify-end gap-2">
+                {editingId === category.id ? (
                   <>
                     <button
-                      onClick={() => handleSave(cat.id)}
-                      className="text-sky-400 hover:text-sky-300"
+                      onClick={() => handleSave(category.id)}
+                      className="text-xs px-3 py-1.5 rounded-md bg-sky-700 hover:bg-sky-600 text-white transition"
                     >
                       Guardar
                     </button>
-                    <button onClick={cancelEdit} className="text-slate-500">
+                    <button
+                      onClick={handleCancelEdit}
+                      className="text-xs px-3 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-400 transition"
+                    >
                       Cancelar
                     </button>
                   </>
                 ) : (
                   <>
                     <button
-                      onClick={() => startEdit(cat)}
-                      className="text-slate-400 hover:text-white"
+                      onClick={() => handleStartEdit(category)}
+                      className="text-xs px-3 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-300 transition"
                     >
                       Editar
                     </button>
                     <button
-                      onClick={() => onDelete(cat.id)}
-                      disabled={cat._count.teams > 0}
-                      className="text-red-400/60 hover:text-red-400 disabled:opacity-20"
+                      onClick={() => {
+                        if (window.confirm(`¿Eliminar "${category.name}"?`)) onDelete(category.id);
+                      }}
+                      disabled={category._count.teams > 0}
+                      className="text-xs px-3 py-1.5 rounded-md bg-red-900/30 hover:bg-red-900/50 text-red-400 transition disabled:opacity-20"
                     >
                       Eliminar
                     </button>
