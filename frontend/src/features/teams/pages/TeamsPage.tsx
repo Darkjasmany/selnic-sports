@@ -40,11 +40,12 @@ const TeamsPage = () => {
     if (editingTeam) {
       updateTeam.mutate({ id: editingTeam.id, input: data }, { onSuccess: handleClose });
     } else {
-      createTeam.mutate({ data }, { onSuccess: handleClose });
+      createTeam.mutate(data, { onSuccess: handleClose });
     }
   };
 
   const handleDelete = (team: Team) => {
+    if (team._count.players > 0) return;
     if (!window.confirm(`¿Eliminar el equipo "${team.name}"?`)) return;
     deleteTeam.mutate(team.id);
   };

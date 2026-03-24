@@ -16,7 +16,8 @@ const teamSchema = z.object({
 type TeamFormValues = z.infer<typeof teamSchema>;
 
 type Props = {
-  defaultValues?: Partial<TeamFormValues>;
+  // defaultValues?: Partial<TeamFormValues>;
+  defaultValues?: TeamFormValues;
   onSubmit: (data: TeamFormValues) => void;
   isPending: boolean;
   onCancel: () => void;
