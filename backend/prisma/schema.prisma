@@ -50,18 +50,30 @@ model Team {
 }
 
 model Player {
-  id               String        @id @default(cuid())
+  id               String            @id @default(cuid())
   firstName        String
   lastName         String
   birthDate        DateTime
-  documentId       String        @unique
+  documentId       String            @unique
+  phone            String?
+  address          String?
+  bloodType        String?
+  nationality      String            @default("Ecuatoriana")
   photoUrl         String?
-  biometricData    Json?         // Descriptores faciales hoy, template después
-  biometricType    BiometricType @default(FACIAL)
+  biometricData    Json?
+  biometricType    BiometricType     @default(FACIAL)
+
+  // Datos representante legal
+  guardianName     String?
+  guardianPhone    String?
+  guardianEmail    String?
+  guardianRelation String?
+
   teams            TeamPlayer[]
   matchValidations MatchValidation[]
   incidents        MatchIncident[]
-  createdAt        DateTime      @default(now())
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
 }
 
 enum BiometricType {
