@@ -1,4 +1,6 @@
 // import { PrismaClient } from "@prisma/client";
+// PrismaClient es una clase que ya "conoce" todos tus modelos porque fue construida específicamente para tu base de datos.
+
 import { PrismaClient } from "../generated/prisma";
 
 // Aquí estamos usando globalThis (un objeto que persiste mientras el proceso de Node.js esté vivo, incluso si los módulos se recargan). Le decimos a TypeScript: "Oye, en el objeto global puede que exista una propiedad llamada prisma"

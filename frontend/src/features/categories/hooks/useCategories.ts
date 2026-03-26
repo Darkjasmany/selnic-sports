@@ -1,3 +1,4 @@
+import { TEAMS_KEY } from "@/features/teams/hooks/useTeams";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import {
@@ -57,6 +58,7 @@ export function useUpdateCategory() {
     mutationFn: ({ id, name }: { id: string; name: string }) => updateCategory(id, name),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [CATEGORIES_KEY] });
+      queryClient.invalidateQueries({ queryKey: [TEAMS_KEY] });
       toast.success("Categoría actualizada correctamente");
     },
     onError: (error: Error) => toast.error(error.message),

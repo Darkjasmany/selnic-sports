@@ -4,6 +4,8 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
+// Si creas un modelo llamado Product, Prisma genera automáticamente prisma.product
+
 generator client {
   provider = "prisma-client-js"
   output   = "../src/generated/prisma"
@@ -69,7 +71,7 @@ model Player {
   guardianEmail    String?
   guardianRelation String?
 
-  teams            TeamPlayer[]
+  teams            TeamPlayer[] // relación inversa Prisma no usa el nombre del modelo (TeamPlayer) para hacer las consultas, sino el nombre del campo que tú le pusiste a la relación dentro del modelo principal.
   matchValidations MatchValidation[]
   incidents        MatchIncident[]
   createdAt        DateTime          @default(now())
