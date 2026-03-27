@@ -1,7 +1,14 @@
 import { TEAMS_KEY } from "@/features/teams/hooks/useTeams";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
-import { createPlayer, getPlayerById, getPlayers } from "../api/players.api";
+import {
+  createPlayer,
+  deletePlayer,
+  getPlayerById,
+  getPlayers,
+  updatePlayer,
+  type UpdatePlayerInput,
+} from "../api/players.api";
 
 export const PLAYERS_KEY = "players";
 
@@ -38,4 +45,33 @@ export function useCreatePlayer() {
   });
 }
 
-export function useUpdatePlayer(id: string) {}
+export function useUpdatePlayer() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, input }: { id: string; input: UpdatePlayerInput }) =>
+      updatePlayer(id, input),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [PLAYERS_KEY] });
+      queryClient.invalidateQueries({ queryKey: [TEAMS_KEY] });
+      toast.success("Jugador actualizado correctamente");
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
+    },
+  });
+}
+
+export function useDeletePlayer() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: deletePlayer,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [PLAYERS_KEY] });
+      queryClient.invalidateQueries({ queryKey: [TEAMS_KEY] });
+      toast.success("Jugador eliminado correctamente");
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
+    },
+  });
+}

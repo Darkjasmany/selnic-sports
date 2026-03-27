@@ -4,7 +4,7 @@ type Props = {
   onClose: () => void;
   children: React.ReactNode;
 };
-const TeamModal = ({ isOpen, children, onClose, title }: Props) => {
+const PlayerModal = ({ isOpen, title, onClose, children }: Props) => {
   if (!isOpen) return null;
 
   return (
@@ -31,4 +31,4 @@ const TeamModal = ({ isOpen, children, onClose, title }: Props) => {
   );
 };
 
-export default TeamModal;
+export default PlayerModal;
