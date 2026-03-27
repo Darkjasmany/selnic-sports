@@ -1,18 +1,11 @@
 import api from "@/api/client";
-import { isAxiosError } from "axios";
+import { handleError } from "@/api/utils";
 
 export type Category = {
   id: string;
   name: string;
   _count: { teams: number };
 };
-
-function handleError(error: unknown): never {
-  if (isAxiosError(error) && error.response) {
-    throw new Error(error.response.data.message ?? "Error en la operación");
-  }
-  throw error;
-}
 
 export async function getCategories(): Promise<Category[]> {
   try {
