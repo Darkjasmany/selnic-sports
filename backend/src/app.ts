@@ -1,6 +1,7 @@
 import cors from "cors";
 import express, { Application } from "express";
 import helmet from "helmet";
+import { join } from "node:path";
 import { errorMiddleware } from "./middlewares/error.middleware";
 import authRouter from "./modules/auth/auth.router";
 import categoryRouter from "./modules/categories/category.router";
@@ -36,6 +37,9 @@ app.use("/api/categories", categoryRouter);
 app.use("/api/teams", teamsRouter);
 app.use("/api/players", playersRouter);
 // app.use('/api/matches', matchesRouter)
+
+// Fotos estáticas
+app.use("/uploads", express.static(join(process.cwd(), "uploads")));
 
 app.use(errorMiddleware);
 

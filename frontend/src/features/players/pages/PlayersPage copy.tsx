@@ -1,0 +1,103 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import type { Player } from "../api/players.api";
+import PlayerForm from "../components/PlayerForm";
+import PlayerModal from "../components/PlayerModal";
+import PlayerTable from "../components/PlayerTable";
+import { useCreatePlayer, useDeletePlayer, usePlayers, useUpdatePlayer } from "../hooks/usePlayers";
+
+const PlayersPage = () => {
+  const [search, setSearch] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingPlayer, setEditingPlayer] = useState<Player | null>(null);
+  const navigate = useNavigate();
+
+  const { data: players = [], isLoading } = usePlayers(search || undefined);
+  const createPlayer = useCreatePlayer();
+  const updatePlayer = useUpdatePlayer();
+  const deletePlayer = useDeletePlayer();
+
+  const handleOpenCreate = () => {
+    setEditingPlayer(null);
+    setIsModalOpen(true);
+  };
+
+  const handleOpenEdit = (player: Player) => {
+    setEditingPlayer(player);
+    setIsModalOpen(true);
+  };
+
+  const handleClose = () => {
+    setIsModalOpen(false);
+    setEditingPlayer(null);
+  };
+
+  const handleSubmit = (data: any) => {
+    if (editingPlayer) {
+      updatePlayer.mutate({ id: editingPlayer.id, input: data }, { onSuccess: handleClose });
+    } else {
+      createPlayer.mutate(data, { onSuccess: handleClose });
+    }
+  };
+
+  const handleDelete = (player: Player) => {
+    if (!window.confirm(`¿Eliminar a ${player.firstName} ${player.lastName}?`)) return;
+    deletePlayer.mutate(player.id);
+  };
+
+  const handleViewReport = (player: Player) => {
+    navigate(`players/${player.id}/report`);
+  };
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-2xl font-semibold text-white">Jugadores</h1>
+          <p className="text-slate-400 text-sm mt-1">
+            Registra y gestiona los jugadores del torneo
+          </p>
+        </div>
+        <button
+          onClick={handleOpenCreate}
+          className="bg-sky-600 hover:bg-sky-500 text-white text-sm font-medium
+                     px-4 py-2 rounded-lg transition"
+        >
+          + Nuevo Jugador
+        </button>
+      </div>
+
+      <div className="bg-slate-900 border border-slate-800 rounded-xl">
+        <div className="p-4 border-b border-slate-800">
+          <input
+            type="text"
+            placeholder="Buscar por nombre o cédula..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="w-full max-w-sm h-10 px-3 rounded-lg bg-slate-800 border
+                       border-slate-700 text-white text-sm placeholder:text-slate-500
+                       focus:outline-none focus:ring-2 focus:ring-sky-500 transition"
+          />
+        </div>
+
+        <PlayerTable
+          players={players}
+          onEdit={handleOpenEdit}
+          onDelete={handleDelete}
+          onViewReport={handleViewReport}
+          isLoading={isLoading}
+        />
+      </div>
+
+      <PlayerModal
+        isOpen={isModalOpen}
+        title={editingPlayer ? "Editar jugador" : "Nuevo jugador"}
+        onClose={handleClose}
+      >
+        <PlayerForm />
+      </PlayerModal>
+    </div>
+  );
+};
+
+export default PlayersPage;

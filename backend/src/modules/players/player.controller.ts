@@ -1,3 +1,5 @@
+import { prisma } from "@/config/database";
+import { AppError } from "@/middlewares/error.middleware";
 import type { NextFunction, Request, Response } from "express";
 import { CreatePlayerInput, SaveBiometricInput, UpdatePlayerInput } from "./player.schema";
 import { PlayerService } from "./player.service";
@@ -68,6 +70,23 @@ export class PlayerController {
     try {
       await PlayerService.delete(req.params.id);
       res.json({ success: true, message: "Jugador eliminado correctamente" });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  static uploadPhoto = async (req: Request<PlayerParams>, res: Response, next: NextFunction) => {
+    try {
+      if (!req.file) throw new AppError(400, "No se ha cargado ninguna imagen");
+
+      const photoUrl = `/uploads/players/${req.file.filename}`;
+
+      const player = await prisma.player.update({
+        where: { id: req.params.id },
+        data: { photoUrl },
+      });
+
+      res.json({ success: true, data: { photoUrl: player.photoUrl } });
     } catch (error) {
       next(error);
     }

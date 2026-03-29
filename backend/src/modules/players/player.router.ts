@@ -1,3 +1,4 @@
+import { uploadPlayerPhoto } from "@/config/multer.js";
 import { Router } from "express";
 import { authenticate } from "../../middlewares/auth.middleware.js";
 import { validateBody } from "../../middlewares/validate.middleware.js";
@@ -15,5 +16,13 @@ router.post("/", validateBody(createPlayerSchema), PlayerController.create);
 router.patch("/:id", validateBody(updatePlayerSchema), PlayerController.update);
 router.post("/:id/biometric", validateBody(saveBiometricSchema), PlayerController.saveBiometric);
 router.delete("/:id", PlayerController.delete);
+
+// Subir foto del jugador
+router.post(
+  "/:id/photo",
+  authenticate,
+  uploadPlayerPhoto.single("photo"),
+  PlayerController.uploadPhoto
+);
 
 export default router;
