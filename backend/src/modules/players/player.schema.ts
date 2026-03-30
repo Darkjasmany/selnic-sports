@@ -11,7 +11,8 @@ export const createPlayerSchema = z.object({
     .trim(),
   birthDate: z
     .string({ required_error: "La fecha de nacimiento es requerida" })
-    .datetime({ message: "Fecha inválida" }),
+    .refine(date => !isNaN(Date.parse(date)), { message: "Fecha inválida" }),
+  // .datetime({ message: "Fecha inválida" }),
   documentId: z
     .string({ required_error: "La cédula es requerida" })
     .min(8, "Mínimo 8 caracteres")

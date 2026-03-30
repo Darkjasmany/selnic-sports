@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { Player } from "../api/players.api";
-import PlayerForm from "../components/PlayerForm";
+import PlayerForm, { type PlayerFormValues } from "../components/PlayerForm";
 import PlayerModal from "../components/PlayerModal";
 import PlayerTable from "../components/PlayerTable";
 import { useCreatePlayer, useDeletePlayer, usePlayers, useUpdatePlayer } from "../hooks/usePlayers";
@@ -17,13 +17,8 @@ const PlayersPage = () => {
   const updatePlayer = useUpdatePlayer();
   const deletePlayer = useDeletePlayer();
 
-  const handleOpenCreate = () => {
-    setEditingPlayer(null);
-    setIsModalOpen(true);
-  };
-
-  const handleOpenEdit = (player: Player) => {
-    setEditingPlayer(player);
+  const handleOpen = (player?: Player) => {
+    setEditingPlayer(player ?? null);
     setIsModalOpen(true);
   };
 
@@ -32,7 +27,7 @@ const PlayersPage = () => {
     setEditingPlayer(null);
   };
 
-  const handleSubmit = (data: any) => {
+  const handleSubmit = (data: PlayerFormValues) => {
     if (editingPlayer) {
       updatePlayer.mutate({ id: editingPlayer.id, input: data }, { onSuccess: handleClose });
     } else {
@@ -46,7 +41,7 @@ const PlayersPage = () => {
   };
 
   const handleViewReport = (player: Player) => {
-    navigate(`players/${player.id}/report`);
+    navigate(`/players/${player.id}/report`);
   };
 
   return (
@@ -59,7 +54,7 @@ const PlayersPage = () => {
           </p>
         </div>
         <button
-          onClick={handleOpenCreate}
+          onClick={() => handleOpen()}
           className="bg-sky-600 hover:bg-sky-500 text-white text-sm font-medium
                      px-4 py-2 rounded-lg transition"
         >
@@ -82,7 +77,7 @@ const PlayersPage = () => {
 
         <PlayerTable
           players={players}
-          onEdit={handleOpenEdit}
+          onEdit={handleOpen}
           onDelete={handleDelete}
           onViewReport={handleViewReport}
           isLoading={isLoading}
@@ -94,7 +89,21 @@ const PlayersPage = () => {
         title={editingPlayer ? "Editar jugador" : "Nuevo jugador"}
         onClose={handleClose}
       >
-        <PlayerForm />
+        <PlayerForm
+          defaultValues={
+            editingPlayer
+              ? {
+                  ...editingPlayer,
+                  birthDate: editingPlayer.birthDate.split("T")[0],
+                  teamId: editingPlayer.teams.find(t => t.isActive)?.team.id ?? "",
+                  guardianRelation: editingPlayer.guardianRelation ?? undefined,
+                }
+              : undefined
+          }
+          onSubmit={handleSubmit}
+          isPending={createPlayer.isPending || updatePlayer.isPending}
+          onCancel={handleClose}
+        />
       </PlayerModal>
     </div>
   );
