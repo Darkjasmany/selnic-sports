@@ -5,6 +5,7 @@ import { join } from "node:path";
 import { errorMiddleware } from "./middlewares/error.middleware";
 import authRouter from "./modules/auth/auth.router";
 import categoryRouter from "./modules/categories/category.router";
+import matchRouter from "./modules/matches/match.router.js";
 import playersRouter from "./modules/players/player.router";
 import teamsRouter from "./modules/teams/team.router";
 
@@ -36,7 +37,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/categories", categoryRouter);
 app.use("/api/teams", teamsRouter);
 app.use("/api/players", playersRouter);
-// app.use('/api/matches', matchesRouter)
+app.use("/api/matches", matchRouter);
 
 // Fotos estáticas
 app.use("/uploads", express.static(join(process.cwd(), "uploads")));

@@ -11,7 +11,7 @@ CREATE TYPE "MatchStatus" AS ENUM ('PENDING', 'VALIDATING_PLAYERS', 'IN_PROGRESS
 CREATE TYPE "TeamSide" AS ENUM ('HOME', 'AWAY');
 
 -- CreateEnum
-CREATE TYPE "IncidentType" AS ENUM ('YELLOW_CARD', 'RED_CARD');
+CREATE TYPE "IncidentType" AS ENUM ('GOAL', 'YELLOW_CARD', 'RED_CARD', 'CORNER', 'FOUL', 'SUBSTITUTION', 'NOTE');
 
 -- CreateTable
 CREATE TABLE "User" (
@@ -39,6 +39,9 @@ CREATE TABLE "Team" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "categoryId" TEXT NOT NULL,
+    "location" TEXT,
+    "managerPhone" TEXT,
+    "coachName" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Team_pkey" PRIMARY KEY ("id")
@@ -51,10 +54,19 @@ CREATE TABLE "Player" (
     "lastName" TEXT NOT NULL,
     "birthDate" TIMESTAMP(3) NOT NULL,
     "documentId" TEXT NOT NULL,
+    "phone" TEXT,
+    "address" TEXT,
+    "bloodType" TEXT,
+    "nationality" TEXT NOT NULL DEFAULT 'Ecuatoriana',
     "photoUrl" TEXT,
     "biometricData" JSONB,
     "biometricType" "BiometricType" NOT NULL DEFAULT 'FACIAL',
+    "guardianName" TEXT,
+    "guardianPhone" TEXT,
+    "guardianEmail" TEXT,
+    "guardianRelation" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Player_pkey" PRIMARY KEY ("id")
 );
@@ -76,10 +88,13 @@ CREATE TABLE "Match" (
     "homeTeamId" TEXT NOT NULL,
     "awayTeamId" TEXT NOT NULL,
     "categoryId" TEXT NOT NULL,
-    "status" "MatchStatus" NOT NULL DEFAULT 'PENDING',
     "scheduledAt" TIMESTAMP(3) NOT NULL,
+    "status" "MatchStatus" NOT NULL DEFAULT 'PENDING',
+    "homeScore" INTEGER,
+    "awayScore" INTEGER,
     "notes" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Match_pkey" PRIMARY KEY ("id")
 );
@@ -89,8 +104,8 @@ CREATE TABLE "MatchValidation" (
     "id" TEXT NOT NULL,
     "matchId" TEXT NOT NULL,
     "playerId" TEXT NOT NULL,
-    "validatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "teamSide" "TeamSide" NOT NULL,
+    "validatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "MatchValidation_pkey" PRIMARY KEY ("id")
 );
@@ -99,9 +114,12 @@ CREATE TABLE "MatchValidation" (
 CREATE TABLE "MatchIncident" (
     "id" TEXT NOT NULL,
     "matchId" TEXT NOT NULL,
-    "playerId" TEXT NOT NULL,
+    "playerId" TEXT,
+    "teamSide" "TeamSide",
     "type" "IncidentType" NOT NULL,
     "minute" INTEGER,
+    "quantity" INTEGER,
+    "notes" TEXT,
 
     CONSTRAINT "MatchIncident_pkey" PRIMARY KEY ("id")
 );
@@ -137,6 +155,9 @@ ALTER TABLE "Match" ADD CONSTRAINT "Match_homeTeamId_fkey" FOREIGN KEY ("homeTea
 ALTER TABLE "Match" ADD CONSTRAINT "Match_awayTeamId_fkey" FOREIGN KEY ("awayTeamId") REFERENCES "Team"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "Match" ADD CONSTRAINT "Match_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "Category"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "MatchValidation" ADD CONSTRAINT "MatchValidation_matchId_fkey" FOREIGN KEY ("matchId") REFERENCES "Match"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -146,4 +167,4 @@ ALTER TABLE "MatchValidation" ADD CONSTRAINT "MatchValidation_playerId_fkey" FOR
 ALTER TABLE "MatchIncident" ADD CONSTRAINT "MatchIncident_matchId_fkey" FOREIGN KEY ("matchId") REFERENCES "Match"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "MatchIncident" ADD CONSTRAINT "MatchIncident_playerId_fkey" FOREIGN KEY ("playerId") REFERENCES "Player"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "MatchIncident" ADD CONSTRAINT "MatchIncident_playerId_fkey" FOREIGN KEY ("playerId") REFERENCES "Player"("id") ON DELETE SET NULL ON UPDATE CASCADE;

@@ -7,5 +7,8 @@
   },
   // Esto asegura que VS Code use el Prettier de la carpeta actual
   "prettier.requireConfig": true,
-  "eslint.enable": true
+  "eslint.enable": true,
+  "[prisma]": {
+    "editor.defaultFormatter": "Prisma.prisma"
+  }
 }

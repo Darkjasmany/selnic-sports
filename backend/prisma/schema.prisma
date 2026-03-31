@@ -32,9 +32,10 @@ enum Role {
 }
 
 model Category {
-  id      String   @id @default(cuid())
-  name    String   @unique  // Sub12, Sub15, Sub18, Mayores
+  id      String  @id @default(cuid())
+  name    String  @unique // Sub12, Sub15, Sub18, Mayores
   teams   Team[]
+  matches Match[]
 }
 
 model Team {
@@ -52,18 +53,18 @@ model Team {
 }
 
 model Player {
-  id               String            @id @default(cuid())
-  firstName        String
-  lastName         String
-  birthDate        DateTime
-  documentId       String            @unique
-  phone            String?
-  address          String?
-  bloodType        String?
-  nationality      String            @default("Ecuatoriana")
-  photoUrl         String?
-  biometricData    Json?
-  biometricType    BiometricType     @default(FACIAL)
+  id            String        @id @default(cuid())
+  firstName     String
+  lastName      String
+  birthDate     DateTime
+  documentId    String        @unique
+  phone         String?
+  address       String?
+  bloodType     String?
+  nationality   String        @default("Ecuatoriana")
+  photoUrl      String?
+  biometricData Json?
+  biometricType BiometricType @default(FACIAL)
 
   // Datos representante legal
   guardianName     String?
@@ -80,51 +81,55 @@ model Player {
 
 enum BiometricType {
   FACIAL
-  FINGERPRINT  // Para cuando llegue el lector
+  FINGERPRINT // Para cuando llegue el lector
 }
 
 model TeamPlayer {
-  id        String   @id @default(cuid())
-  teamId    String
-  playerId  String
-  team      Team     @relation(fields: [teamId], references: [id])
-  player    Player   @relation(fields: [playerId], references: [id])
-  isActive  Boolean  @default(true)
-  joinedAt  DateTime @default(now())
+  id       String   @id @default(cuid())
+  teamId   String
+  playerId String
+  team     Team     @relation(fields: [teamId], references: [id])
+  player   Player   @relation(fields: [playerId], references: [id])
+  isActive Boolean  @default(true)
+  joinedAt DateTime @default(now())
 
   @@unique([teamId, playerId])
 }
 
 model Match {
-  id           String      @id @default(cuid())
-  homeTeamId   String
-  awayTeamId   String
-  homeTeam     Team        @relation("HomeTeam", fields: [homeTeamId], references: [id])
-  awayTeam     Team        @relation("AwayTeam", fields: [awayTeamId], references: [id])
-  categoryId   String
-  status       MatchStatus @default(PENDING)
-  scheduledAt  DateTime
-  notes        String?
-  validations  MatchValidation[]
-  incidents    MatchIncident[]
-  createdAt    DateTime    @default(now())
+  id          String            @id @default(cuid())
+  homeTeamId  String
+  awayTeamId  String
+  categoryId  String
+  scheduledAt DateTime
+  status      MatchStatus       @default(PENDING)
+  homeScore   Int?
+  awayScore   Int?
+  notes       String?
+  homeTeam    Team              @relation("HomeTeam", fields: [homeTeamId], references: [id])
+  awayTeam    Team              @relation("AwayTeam", fields: [awayTeamId], references: [id])
+  category    Category          @relation(fields: [categoryId], references: [id])
+  validations MatchValidation[]
+  incidents   MatchIncident[]
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
 }
 
 enum MatchStatus {
-  PENDING              // Creado
-  VALIDATING_PLAYERS   // Validando los 22
-  IN_PROGRESS          // Todos validados, llenando incidencias
-  FINISHED             // Cerrado
+  PENDING
+  VALIDATING_PLAYERS
+  IN_PROGRESS
+  FINISHED
 }
 
 model MatchValidation {
   id          String   @id @default(cuid())
   matchId     String
   playerId    String
+  teamSide    TeamSide
+  validatedAt DateTime @default(now())
   match       Match    @relation(fields: [matchId], references: [id])
   player      Player   @relation(fields: [playerId], references: [id])
-  validatedAt DateTime @default(now())
-  teamSide    TeamSide // HOME o AWAY
 
   @@unique([matchId, playerId])
 }
@@ -137,14 +142,22 @@ enum TeamSide {
 model MatchIncident {
   id       String       @id @default(cuid())
   matchId  String
-  playerId String
-  match    Match        @relation(fields: [matchId], references: [id])
-  player   Player       @relation(fields: [playerId], references: [id])
+  playerId String?
+  teamSide TeamSide?
   type     IncidentType
   minute   Int?
+  quantity Int?
+  notes    String?
+  match    Match        @relation(fields: [matchId], references: [id])
+  player   Player?      @relation(fields: [playerId], references: [id])
 }
 
 enum IncidentType {
+  GOAL
   YELLOW_CARD
   RED_CARD
+  CORNER
+  FOUL
+  SUBSTITUTION
+  NOTE
 }

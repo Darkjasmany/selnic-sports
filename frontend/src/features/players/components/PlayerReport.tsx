@@ -135,7 +135,7 @@ const PlayerReport = ({ player }: Props) => {
         )}
 
         {/* Firma */}
-        <div className="grid grid-cols-2 gap-8 mt-8">
+        <div className="grid grid-cols-2 gap-8 mt-16">
           <div className="text-center">
             <div className="border-t border-gray-400 pt-2">
               <p className="text-xs text-gray-500">Firma del jugador / representante</p>

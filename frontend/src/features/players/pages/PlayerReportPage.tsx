@@ -7,13 +7,13 @@ const PlayerReportPage = () => {
   const navigate = useNavigate();
   const { data: player, isLoading } = usePlayer(id!);
 
-  // if (isLoading) {
-  //   return (
-  //     <div className="flex items-center justify-center py-16 text-slate-400">Cargando ficha...</div>
-  //   );
-  // }
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-16 text-slate-400">Cargando ficha...</div>
+    );
+  }
 
-  // if (!player) return null;
+  if (!player) return null;
 
   if (!player && !isLoading) {
     return (

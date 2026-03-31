@@ -182,7 +182,7 @@ const PlayerForm = ({ defaultValues, onSubmit, isPending, onCancel }: Props) => 
             <div className="sm:col-span-2">
               <label className={label}>Nombres y Apellidos del Representante</label>
               <input
-                placeholder="Ej. María Auxiliadora..."
+                placeholder="Ej. Selene Elizabeth..."
                 className={getFieldClass(false)}
                 {...register("guardianName")}
               />
