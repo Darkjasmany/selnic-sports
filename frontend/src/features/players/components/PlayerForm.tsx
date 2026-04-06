@@ -1,4 +1,5 @@
 import api from "@/api/client";
+import { TEAMS_KEY } from "@/features/teams/hooks/useTeams";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
@@ -51,7 +52,8 @@ const PlayerForm = ({ defaultValues, onSubmit, isPending, onCancel }: Props) => 
   }, [defaultValues, reset]);
 
   const { data: teams = [] } = useQuery({
-    queryKey: ["team-select"],
+    // queryKey: ["team-select"],
+    queryKey: [TEAMS_KEY],
     queryFn: async () => {
       const { data } = await api.get("/teams");
       return data.data as { id: string; name: string; category: { name: string } }[];
@@ -197,7 +199,7 @@ const PlayerForm = ({ defaultValues, onSubmit, isPending, onCancel }: Props) => 
               </select>
             </div>
             <div>
-              <label className={label}>Teléfono del Representante</label>
+              <label className={label}>Teléfono</label>
               <input
                 placeholder="0987654321"
                 className={getFieldClass(false)}

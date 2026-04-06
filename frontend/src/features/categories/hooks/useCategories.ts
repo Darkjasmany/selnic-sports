@@ -57,8 +57,11 @@ export function useUpdateCategory() {
   return useMutation({
     mutationFn: ({ id, name }: { id: string; name: string }) => updateCategory(id, name),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [CATEGORIES_KEY] });
-      queryClient.invalidateQueries({ queryKey: [TEAMS_KEY] });
+      Promise.all([
+        // Ejecuta ambas invalidaciones al mismo tiempo
+        queryClient.invalidateQueries({ queryKey: [CATEGORIES_KEY] }),
+        queryClient.invalidateQueries({ queryKey: [TEAMS_KEY] }),
+      ]);
       toast.success("Categoría actualizada correctamente");
     },
     onError: (error: Error) => toast.error(error.message),

@@ -35,8 +35,10 @@ export function useCreatePlayer() {
   return useMutation({
     mutationFn: createPlayer,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [PLAYERS_KEY] });
-      queryClient.invalidateQueries({ queryKey: [TEAMS_KEY] });
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: [PLAYERS_KEY] }),
+        queryClient.invalidateQueries({ queryKey: [TEAMS_KEY] }),
+      ]);
       toast.success("Jugador registrado correctamente");
     },
     onError: (error: Error) => {
@@ -51,8 +53,10 @@ export function useUpdatePlayer() {
     mutationFn: ({ id, input }: { id: string; input: UpdatePlayerInput }) =>
       updatePlayer(id, input),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [PLAYERS_KEY] });
-      queryClient.invalidateQueries({ queryKey: [TEAMS_KEY] });
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: [PLAYERS_KEY] }),
+        queryClient.invalidateQueries({ queryKey: [TEAMS_KEY] }),
+      ]);
       toast.success("Jugador actualizado correctamente");
     },
     onError: (error: Error) => {
@@ -66,8 +70,10 @@ export function useDeletePlayer() {
   return useMutation({
     mutationFn: deletePlayer,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [PLAYERS_KEY] });
-      queryClient.invalidateQueries({ queryKey: [TEAMS_KEY] });
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: [PLAYERS_KEY] }),
+        queryClient.invalidateQueries({ queryKey: [TEAMS_KEY] }),
+      ]);
       toast.success("Jugador eliminado correctamente");
     },
     onError: (error: Error) => {

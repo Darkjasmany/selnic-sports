@@ -59,7 +59,7 @@ export type Incident = {
   notes?: string;
 };
 
-export async function getMatch(): Promise<Match[]> {
+export async function getMatches(): Promise<Match[]> {
   try {
     const { data } = await api.get("/matches");
     return data.data;

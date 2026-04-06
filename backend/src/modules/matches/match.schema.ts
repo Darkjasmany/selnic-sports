@@ -9,7 +9,8 @@ export const createMatchSchema = z
     categoryId: z.string({ required_error: "La categoría es requerida" }).cuid("ID inválido"),
     scheduledAt: z
       .string({ required_error: "La fecha es requerida" })
-      .datetime({ message: "Fecha inválida" }),
+      // .datetime({ message: "Fecha inválida" }),
+      .refine(date => !isNaN(Date.parse(date)), { message: "Fecha inválida" }),
     notes: z.string().optional(),
   })
   .refine(data => data.homeTeamId !== data.awayTeamId, {
