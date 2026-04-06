@@ -1,5 +1,5 @@
 import { useState } from "react";
-import MatchForm, { type MarchFormValues } from "../components/MatchForm";
+import MatchForm, { type MatchFormValues } from "../components/MatchForm";
 import MatchModal from "../components/MatchModal";
 import MatchesTable from "../components/MatchTable";
 import { useCreateMatch, useMatches } from "../hooks/useMatches";
@@ -15,7 +15,7 @@ const MatchesPage = () => {
     setIsModalOpen(false);
   };
 
-  const handleSubmit = (data: MarchFormValues) => {
+  const handleSubmit = (data: MatchFormValues) => {
     createMatch.mutate(data, { onSuccess: handleClose });
   };
 

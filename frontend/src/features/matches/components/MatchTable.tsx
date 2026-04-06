@@ -70,8 +70,7 @@ const MatchesTable = ({ matches }: Props) => {
               <td className="py-3 px-4 text-right">
                 <button
                   onClick={() => navigate(`/matches/${match.id}/flow`)}
-                  className="text-xs px-3 py-1.5 rounded-md bg-slate-800
-                                 hover:bg-slate-700 text-sky-400 transition"
+                  className="text-xs px-3 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 text-sky-400 transition"
                 >
                   {match.status === "FINISHED" ? "Ver acta" : "Abrir partido"}
                 </button>
