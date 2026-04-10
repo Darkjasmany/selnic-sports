@@ -72,9 +72,9 @@ const FaceVerify = ({ playerDescriptor, playerName, onSuccess, onCancel }: Props
           if (!videoRef.current || !faceapi) return;
 
           const detection = await faceapi
-            .detectSingleFace(videoRef.current, new faceapi.SsdMobilenetv1Options())
-            .withFaceLandmarks()
-            .withFaceDescriptor();
+            .detectSingleFace(videoRef.current, new faceapi.SsdMobilenetv1Options()) // Detecta: Busca una cara en el video
+            .withFaceLandmarks() //
+            .withFaceDescriptor(); //Extrae: Si encuentra una cara, saca su "huella digital facial"
 
           if (!detection) {
             setMessage("No se detecta rostro. Posiciona tu cara frente a la cámara.");
@@ -85,6 +85,7 @@ const FaceVerify = ({ playerDescriptor, playerName, onSuccess, onCancel }: Props
           const distance = euclideanDistance(playerDescriptor, liveDescriptor);
 
           // Umbral de 0.5 — ajusta según necesidades
+          // Si el número es cercano a 0, las caras son idénticas. Si el número es alto (ej: mayor a 0.5), son personas diferentes.
           if (distance < 0.5) {
             clearInterval(intervalRef.current!);
             stopCamera();
@@ -114,7 +115,48 @@ const FaceVerify = ({ playerDescriptor, playerName, onSuccess, onCancel }: Props
     streamRef.current?.getTracks().forEach(t => t.stop());
   };
 
-  return <div>FaceVerify</div>;
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 ">
+      <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 w-full max-w-md">
+        <h3 className="text-lg font-medium text-white mb-1">Verificando identidad</h3>
+        <p className="text-slate-400 text-sm mb-4 ">{playerName}</p>
+
+        <div className="relative bg-black rounded-lg overflow-hidden mb-4">
+          <video
+            src=""
+            ref={videoRef}
+            muted
+            playsInline
+            className="w-full rounded-lg"
+            style={{ transform: "scaleX(-1)" }}
+          />
+
+          <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
+
+          {/* Overlay de estado */}
+          <div
+            className={` absolute bottom-3 left-3 right-3 py-2 px-3 rounded-lg text-sm text-center
+            ${status === "success" ? "bg-green-600" : "bg-black/60"}`}
+          >
+            {status === "loading" && <span className="text-slate-300">⏳ {message}</span>}
+            {status === "scanning" && <span className="text-white">🔍 {message}</span>}
+            {status === "success" && <span className="text-white font-medium">✅ {message}</span>}
+            {status === "failed" && <span className="text-red-400">❌ {message}</span>}
+          </div>
+        </div>
+
+        <button
+          onClick={() => {
+            stopCamera();
+            onCancel();
+          }}
+          className="w-full h-10 rounded-lg border border-slate-700 text-slate-400 hover:bg-slate-800 transition text-sm"
+        >
+          Cancelar Verificación
+        </button>
+      </div>
+    </div>
+  );
 };
 
 export default FaceVerify;
