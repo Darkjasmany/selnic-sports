@@ -90,3 +90,13 @@ export async function deletePlayer(id: string): Promise<void> {
     handleError(error);
   }
 }
+
+export async function uploadPhotoPlayer(id: string) {
+  try {
+    await api.post(`/players/${id}/photo`, FormData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+  } catch (error) {
+    handleError(error);
+  }
+}

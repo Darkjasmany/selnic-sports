@@ -7,6 +7,7 @@ import {
   getPlayerById,
   getPlayers,
   updatePlayer,
+  uploadPhotoPlayer,
   type UpdatePlayerInput,
 } from "../api/players.api";
 
@@ -79,5 +80,14 @@ export function useDeletePlayer() {
     onError: (error: Error) => {
       toast.error(error.message);
     },
+  });
+}
+
+export function useUploadPhoto() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id }: { id: string }) => uploadPhotoPlayer(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: [PLAYERS_KEY] }),
+    onError: (error: Error) => toast.error(error.message),
   });
 }

@@ -2,7 +2,7 @@ import api from "@/api/client";
 import { TEAMS_KEY } from "@/features/teams/hooks/useTeams";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -25,8 +25,8 @@ const playerSchema = z.object({
 export type PlayerFormValues = z.infer<typeof playerSchema>;
 
 type Props = {
-  defaultValues?: Partial<PlayerFormValues>;
-  onSubmit: (data: PlayerFormValues) => void;
+  defaultValues?: Partial<PlayerFormValues> & { photoUrl?: string };
+  onSubmit: (data: PlayerFormValues, photo?: File) => void;
   isPending: boolean;
   onCancel: () => void;
 };
@@ -60,8 +60,21 @@ const PlayerForm = ({ defaultValues, onSubmit, isPending, onCancel }: Props) => 
     },
   });
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(defaultValues?.photoUrl ?? null);
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setPhotoFile(file);
+    const reader = new FileReader();
+    reader.onload = () => setPhotoPreview(reader.result as string);
+    reader.readAsDataURL(file);
+  };
+
   const handleInternalSubmit = (data: PlayerFormValues) => {
-    onSubmit(data);
+    onSubmit(data, photoFile ?? undefined);
   };
 
   // Estilos de Tailwind extraídos para limpieza
@@ -218,6 +231,70 @@ const PlayerForm = ({ defaultValues, onSubmit, isPending, onCancel }: Props) => 
           </div>
         </section>
       </div>
+
+      {/* --- FOTO DEL JUGADOR --- */}
+      <section>
+        <header className="sticky top-0 bg-slate-900 py-3 z-10 ">
+          <p className="text-xs font-bold text-sky-400 uppercase tracking-widest">
+            Foto del Jugador
+          </p>
+          <div className="flex items-center gap-6">
+            {/* Preview */}
+            <div
+              onClick={() => fileInputRef.current?.click()}
+              className="w-28 h-32 rounded-xl border-2 border-dashed border-slate-700 hover:border-sky-500 bg-slate-800/50 flex items-center justify-center cursor-pointer transition-all overflow-hidden shrink-0 group"
+            >
+              {photoPreview ? (
+                <img
+                  src={photoPreview!}
+                  alt="Foto del jugador"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="text-center px-2">
+                  <p className="text-2xl mb-1">📷</p>
+                  <p className="text-xs text-slate-500 group-hover:text-sky-400 transition">
+                    Clic para subir
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Info */}
+            <div className="flex flex-col gap-2">
+              <p className="text-sm text-slate-300">Foto de identificación del jugador</p>
+              <p className="text-xs text-slate-500">JPG, PNG o WebP - máximo 5MB</p>
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="text-xs px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-sky-400 border border-slate-700 transition w-fit"
+              >
+                {photoPreview ? "Cambiar Foto" : "Seleccionar Foto"}
+              </button>
+              {photoPreview && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPhotoPreview(null);
+                    setPhotoFile(null);
+                  }}
+                  className="text-xs text-red-400 hover:text-red-300 transition w-fit"
+                >
+                  Eliminar Foto
+                </button>
+              )}
+            </div>
+            {/* Input oculto */}
+            <input
+              type="file"
+              ref={fileInputRef}
+              accept="image/jpeg,image/png,image/webp"
+              className="hidden"
+              onChange={handlePhotoChange}
+            />
+          </div>
+        </header>
+      </section>
 
       {/* --- BOTONES ACCIÓN (SIEMPRE VISIBLES AL FINAL) --- */}
       <footer className="flex gap-4 pt-6 mt-2 border-t border-slate-800 bg-slate-900 sticky bottom-0 z-20">
