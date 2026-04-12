@@ -1,4 +1,5 @@
 import { getAge } from "@/utils/date";
+import { getPhotoUrl } from "@/utils/url";
 import type { Player } from "../api/players.api";
 
 type Props = {
@@ -52,13 +53,10 @@ const PlayerTable = ({ players, onDelete, onEdit, onViewReport, isLoading }: Pro
                 <td className="py-3 px-4 text-slate-500">{index + 1}</td>
                 <td className="py-3 px-4">
                   <div className="flex items-center gap-3">
-                    <div
-                      className="w-8 h-8 rounded-full bg-slate-700 flex items-center
-                                    justify-center text-xs text-slate-300 shrink-0"
-                    >
+                    <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-xs text-slate-300 shrink-0">
                       {player.photoUrl ? (
                         <img
-                          src={player.photoUrl}
+                          src={getPhotoUrl(player.photoUrl)}
                           alt={player.firstName}
                           className="w-full h-full rounded-full object-cover"
                         />

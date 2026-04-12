@@ -86,7 +86,7 @@ export function useDeletePlayer() {
 export function useUploadPhoto() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id }: { id: string }) => uploadPhotoPlayer(id),
+    mutationFn: ({ id, file }: { id: string; file: File }) => uploadPhotoPlayer(id, file),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: [PLAYERS_KEY] }),
     onError: (error: Error) => toast.error(error.message),
   });

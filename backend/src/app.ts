@@ -23,6 +23,18 @@ app.use(
   })
 );
 
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" }, // Permite cargar recursos de otro origen
+    contentSecurityPolicy: {
+      directives: {
+        ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+        "img-src": ["'self'", "data:", "http://localhost:3000"], // Añade tu URL de backend
+      },
+    },
+  })
+);
+
 // Parseo de JSON
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
@@ -40,6 +52,7 @@ app.use("/api/players", playersRouter);
 app.use("/api/matches", matchRouter);
 
 // Fotos estáticas
+// Sirve los uploads desde la raíz, NO desde /api
 app.use("/uploads", express.static(join(process.cwd(), "uploads")));
 
 app.use(errorMiddleware);

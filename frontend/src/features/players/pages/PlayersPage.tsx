@@ -4,7 +4,13 @@ import type { Player } from "../api/players.api";
 import PlayerForm, { type PlayerFormValues } from "../components/PlayerForm";
 import PlayerModal from "../components/PlayerModal";
 import PlayerTable from "../components/PlayerTable";
-import { useCreatePlayer, useDeletePlayer, usePlayers, useUpdatePlayer } from "../hooks/usePlayers";
+import {
+  useCreatePlayer,
+  useDeletePlayer,
+  usePlayers,
+  useUpdatePlayer,
+  useUploadPhoto,
+} from "../hooks/usePlayers";
 
 const PlayersPage = () => {
   const [search, setSearch] = useState("");
@@ -16,6 +22,7 @@ const PlayersPage = () => {
   const createPlayer = useCreatePlayer();
   const updatePlayer = useUpdatePlayer();
   const deletePlayer = useDeletePlayer();
+  const uploadPhoto = useUploadPhoto();
 
   const handleOpen = (player?: Player) => {
     setEditingPlayer(player ?? null);
@@ -27,11 +34,29 @@ const PlayersPage = () => {
     setEditingPlayer(null);
   };
 
-  const handleSubmit = (data: PlayerFormValues) => {
+  const handleSubmit = (data: PlayerFormValues, photo?: File) => {
     if (editingPlayer) {
-      updatePlayer.mutate({ id: editingPlayer.id, input: data }, { onSuccess: handleClose });
+      updatePlayer.mutate(
+        { id: editingPlayer.id, input: data },
+        {
+          onSuccess: async updatedPlayer => {
+            // Si hay foto nueva, la subimos
+            if (photo) {
+              await uploadPhoto.mutateAsync({ id: updatedPlayer.id, file: photo });
+            }
+            handleClose();
+          },
+        }
+      );
     } else {
-      createPlayer.mutate(data, { onSuccess: handleClose });
+      createPlayer.mutate(data, {
+        onSuccess: async createdPlayer => {
+          if (photo) {
+            await uploadPhoto.mutateAsync({ id: createdPlayer.id, file: photo });
+          }
+          handleClose();
+        },
+      });
     }
   };
 

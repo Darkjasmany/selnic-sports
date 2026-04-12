@@ -1,5 +1,6 @@
 import api from "@/api/client";
 import { TEAMS_KEY } from "@/features/teams/hooks/useTeams";
+import { getPhotoUrl } from "@/utils/url";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery } from "@tanstack/react-query";
 import React, { useEffect, useRef, useState } from "react";
@@ -49,6 +50,8 @@ const PlayerForm = ({ defaultValues, onSubmit, isPending, onCancel }: Props) => 
 
   useEffect(() => {
     reset({ nationality: "Ecuatoriana", ...defaultValues });
+    // Actualiza el preview cuando cambian los defaultValues (edición)
+    setPhotoPreview(defaultValues?.photoUrl ? (getPhotoUrl(defaultValues.photoUrl) ?? null) : null);
   }, [defaultValues, reset]);
 
   const { data: teams = [] } = useQuery({
@@ -61,7 +64,9 @@ const PlayerForm = ({ defaultValues, onSubmit, isPending, onCancel }: Props) => 
   });
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [photoPreview, setPhotoPreview] = useState<string | null>(defaultValues?.photoUrl ?? null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(
+    defaultValues?.photoUrl ? (getPhotoUrl(defaultValues.photoUrl) ?? null) : null
+  );
   const [photoFile, setPhotoFile] = useState<File | null>(null);
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {

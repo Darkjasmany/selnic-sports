@@ -91,11 +91,12 @@ export async function deletePlayer(id: string): Promise<void> {
   }
 }
 
-export async function uploadPhotoPlayer(id: string) {
+export async function uploadPhotoPlayer(id: string, photo: File) {
   try {
-    await api.post(`/players/${id}/photo`, FormData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+    const formData = new FormData();
+    formData.append("photo", photo, photo.name); // "photo" debe coincidir con uploadPlayerPhoto.single("photo")
+    const { data } = await api.post(`/players/${id}/photo`, formData);
+    return data;
   } catch (error) {
     handleError(error);
   }

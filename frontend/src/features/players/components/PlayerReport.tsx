@@ -1,4 +1,5 @@
 import { formatDate, getAge } from "@/utils/date";
+import { getPhotoUrl } from "@/utils/url";
 import type { Player } from "../api/players.api";
 
 type Props = {
@@ -33,7 +34,7 @@ const PlayerReport = ({ player }: Props) => {
           >
             {player.photoUrl ? (
               <img
-                src={player.photoUrl}
+                src={getPhotoUrl(player.photoUrl)}
                 alt={player.firstName}
                 className="w-full h-full object-cover"
               />

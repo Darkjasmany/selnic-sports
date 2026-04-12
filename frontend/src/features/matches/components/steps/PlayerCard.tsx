@@ -1,3 +1,4 @@
+import { getPhotoUrl } from "@/utils/url";
 import type { MatchPlayer, TeamSide } from "../../api/matches.api";
 
 type Props = {
@@ -21,7 +22,7 @@ const PlayerCard = ({ player, side, validatedId, handleValidate, validatePlayer 
     >
       <div className="w-9 h-9 rounded-full bg-slate-700 flex items-center justify-center text-xs text-slate-300 shrink-0 overflow-hidden">
         {player.photoUrl ? (
-          <img src={player.photoUrl} className="w-full h-full object-cover" />
+          <img src={getPhotoUrl(player.photoUrl)} className="w-full h-full object-cover" />
         ) : (
           `${player.lastName[0]}${player.firstName[0]}`
         )}
