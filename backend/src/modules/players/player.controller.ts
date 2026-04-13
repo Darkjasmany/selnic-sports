@@ -53,6 +53,15 @@ export class PlayerController {
     }
   };
 
+  static delete = async (req: Request<PlayerParams>, res: Response, next: NextFunction) => {
+    try {
+      await PlayerService.delete(req.params.id);
+      res.json({ success: true, message: "Jugador eliminado correctamente" });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   static saveBiometric = async (
     req: Request<PlayerParams, {}, SaveBiometricInput>,
     res: Response,
@@ -61,15 +70,6 @@ export class PlayerController {
     try {
       const player = PlayerService.saveBiometric(req.params.id, req.body);
       res.json({ success: true, data: player });
-    } catch (error) {
-      next(error);
-    }
-  };
-
-  static delete = async (req: Request<PlayerParams>, res: Response, next: NextFunction) => {
-    try {
-      await PlayerService.delete(req.params.id);
-      res.json({ success: true, message: "Jugador eliminado correctamente" });
     } catch (error) {
       next(error);
     }

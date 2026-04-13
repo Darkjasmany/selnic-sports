@@ -7,10 +7,18 @@ type Props = {
   onEdit: (player: Player) => void;
   onDelete: (player: Player) => void;
   onViewReport: (player: Player) => void;
+  onCaptureBiometric: (player: Player) => void;
   isLoading: boolean;
 };
 
-const PlayerTable = ({ players, onDelete, onEdit, onViewReport, isLoading }: Props) => {
+const PlayerTable = ({
+  players,
+  onDelete,
+  onEdit,
+  onViewReport,
+  onCaptureBiometric,
+  isLoading,
+}: Props) => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-16 text-slate-400">
@@ -18,7 +26,7 @@ const PlayerTable = ({ players, onDelete, onEdit, onViewReport, isLoading }: Pro
       </div>
     );
   }
-
+  // !Reconocimiento Biometrico por implementar
   if (players.length === 0) {
     return (
       <div className="flex items-center justify-center py-16 text-slate-400">
@@ -87,9 +95,14 @@ const PlayerTable = ({ players, onDelete, onEdit, onViewReport, isLoading }: Pro
                       Registrado
                     </span>
                   ) : (
-                    <span className="bg-amber-900/50 text-amber-400 text-xs px-2 py-1 rounded-md">
-                      Pendiente
-                    </span>
+                    // <span className="bg-amber-900/50 text-amber-400 text-xs px-2 py-1 rounded-md">
+                    <button
+                      onClick={() => onCaptureBiometric(player)}
+                      className={`text-xs px-2 py-1 rounded-md transition ${player.biometricData ? "bg-green-900/30 hover:bg-green-900/50 text-green-400" : "bg-amber-900/30 hover:bg-amber-900/50 text-amber-400"}  `}
+                    >
+                      {player.biometricData ? "✓ Facial" : "Facial"}
+                    </button>
+                    // </span>
                   )}
                 </td>
                 <td className="py-3 px-4 text-right">

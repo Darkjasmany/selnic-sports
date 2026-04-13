@@ -24,6 +24,9 @@ const PlayersPage = () => {
   const deletePlayer = useDeletePlayer();
   const uploadPhoto = useUploadPhoto();
 
+  // Estado Biometrico
+  const [] = useState(null);
+
   const handleOpen = (player?: Player) => {
     setEditingPlayer(player ?? null);
     setIsModalOpen(true);
@@ -59,6 +62,8 @@ const PlayersPage = () => {
       });
     }
   };
+
+  const handleBiometricSaved = () => {};
 
   const handleDelete = (player: Player) => {
     if (!window.confirm(`¿Eliminar a ${player.firstName} ${player.lastName}?`)) return;
