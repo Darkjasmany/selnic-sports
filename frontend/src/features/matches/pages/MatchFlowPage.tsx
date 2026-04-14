@@ -51,8 +51,10 @@ const MatchFlowPage = () => {
       {currentStep === 1 && (
         <StepValidation match={match} players={players} onComplete={() => setStep(2)} />
       )}
-      {currentStep === 2 && <StepIncidents />}
-      {currentStep === 3 && <StepReport />}
+      {currentStep === 2 && (
+        <StepIncidents match={match} players={players} onComplete={() => setStep(3)} />
+      )}
+      {currentStep === 3 && <StepReport match={match} />}
     </div>
   );
 };
