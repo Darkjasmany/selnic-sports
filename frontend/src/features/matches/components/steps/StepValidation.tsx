@@ -1,7 +1,7 @@
+import { FaceVerify } from "@/features/biometric";
 import { useState } from "react";
 import type { Match, MatchPlayer, TeamSide } from "../../api/matches.api";
 import { useValidatePlayer } from "../../hooks/useMatches";
-import FaceVerify from "../FaceVerify";
 import PlayerCard from "./PlayerCard";
 
 type Props = {

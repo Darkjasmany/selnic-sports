@@ -1,3 +1,5 @@
+import { FaceCapture } from "@/features/biometric";
+import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { Player } from "../api/players.api";
@@ -5,6 +7,7 @@ import PlayerForm, { type PlayerFormValues } from "../components/PlayerForm";
 import PlayerModal from "../components/PlayerModal";
 import PlayerTable from "../components/PlayerTable";
 import {
+  PLAYERS_KEY,
   useCreatePlayer,
   useDeletePlayer,
   usePlayers,
@@ -25,7 +28,8 @@ const PlayersPage = () => {
   const uploadPhoto = useUploadPhoto();
 
   // Estado Biometrico
-  const [] = useState(null);
+  const [biometricPlayer, setBiometricPlayer] = useState<Player | null>(null);
+  const queryClient = useQueryClient();
 
   const handleOpen = (player?: Player) => {
     setEditingPlayer(player ?? null);
@@ -63,7 +67,10 @@ const PlayersPage = () => {
     }
   };
 
-  const handleBiometricSaved = () => {};
+  const handleBiometricSaved = () => {
+    setBiometricPlayer(null);
+    queryClient.invalidateQueries({ queryKey: [PLAYERS_KEY] });
+  };
 
   const handleDelete = (player: Player) => {
     if (!window.confirm(`¿Eliminar a ${player.firstName} ${player.lastName}?`)) return;
@@ -98,9 +105,7 @@ const PlayersPage = () => {
             placeholder="Buscar por nombre o cédula..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="w-full max-w-sm h-10 px-3 rounded-lg bg-slate-800 border
-                       border-slate-700 text-white text-sm placeholder:text-slate-500
-                       focus:outline-none focus:ring-2 focus:ring-sky-500 transition"
+            className="w-full max-w-sm h-10 px-3 rounded-lg bg-slate-800 border  border-slate-700 text-white text-sm placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500 transition"
           />
         </div>
 
@@ -109,6 +114,7 @@ const PlayersPage = () => {
           onEdit={handleOpen}
           onDelete={handleDelete}
           onViewReport={handleViewReport}
+          onCaptureBiometric={setBiometricPlayer}
           isLoading={isLoading}
         />
       </div>
@@ -134,6 +140,16 @@ const PlayersPage = () => {
           onCancel={handleClose}
         />
       </PlayerModal>
+
+      {biometricPlayer && (
+        <FaceCapture
+          playerId={biometricPlayer.id}
+          playerName={`${biometricPlayer.firstName} ${biometricPlayer.lastName}`}
+          hasBiometric={!!biometricPlayer.biometricData}
+          onSaved={handleBiometricSaved}
+          onCancel={() => setBiometricPlayer(null)}
+        />
+      )}
     </div>
   );
 };

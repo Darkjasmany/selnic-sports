@@ -27,17 +27,19 @@ const TeamTable = ({ teams, onDelete, onEdit, isLoading }: Props) => {
     <div className="overflow-auto">
       <table className="w-full text-sm">
         <thead>
-          <th className="text-left py-3 px-4 text-slate-400 font-medium">#</th>
-          <th className="text-left py-3 px-4 text-slate-400 font-medium">Nombre</th>
-          <th className="text-left py-3 px-4 text-slate-400 font-medium">Categoría</th>
-          <th className="text-left py-3 px-4 text-slate-400 font-medium">Lugar</th>
-          <th className="text-left py-3 px-4 text-slate-400 font-medium">DT</th>
-          <th className="text-left py-3 px-4 text-slate-400 font-medium">Jugadores</th>
-          <th className="text-right py-3 px-4 text-slate-400 font-medium">Acciones</th>
+          <tr>
+            <th className="text-left py-3 px-4 text-slate-400 font-medium">#</th>
+            <th className="text-left py-3 px-4 text-slate-400 font-medium">Nombre</th>
+            <th className="text-left py-3 px-4 text-slate-400 font-medium">Categoría</th>
+            <th className="text-left py-3 px-4 text-slate-400 font-medium">Lugar</th>
+            <th className="text-left py-3 px-4 text-slate-400 font-medium">DT</th>
+            <th className="text-left py-3 px-4 text-slate-400 font-medium">Jugadores</th>
+            <th className="text-right py-3 px-4 text-slate-400 font-medium">Acciones</th>
+          </tr>
         </thead>
         <tbody>
           {teams.map((team, index) => (
-            <tr>
+            <tr key={team.id}>
               <td className="py-3 px-4 text-slate-500">{index + 1}</td>
               <td className="py-3 px-4 text-white font-medium">{team.name}</td>
               <td className="py-3 px-4">
