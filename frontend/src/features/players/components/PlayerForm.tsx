@@ -5,9 +5,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery } from "@tanstack/react-query";
 import React, { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { string, z } from "zod";
 
 const playerSchema = z.object({
+  id: string().optional(),
   firstName: z.string().min(2, "Mínimo 2 caracteres").trim(),
   lastName: z.string().min(2, "Mínimo 2 caracteres").trim(),
   documentId: z.string().min(8, "Mínimo 8 caracteres").trim(),
@@ -17,6 +18,7 @@ const playerSchema = z.object({
   address: z.string().trim().optional(),
   bloodType: z.string().optional(),
   nationality: z.string().min(1).default("Ecuatoriana"),
+  isActive: z.boolean().default(true),
   guardianName: z.string().trim().optional(),
   guardianPhone: z.string().trim().optional(),
   guardianEmail: z.string().email("Email inválido").optional().or(z.literal("")),
@@ -26,7 +28,10 @@ const playerSchema = z.object({
 export type PlayerFormValues = z.infer<typeof playerSchema>;
 
 type Props = {
-  defaultValues?: Partial<PlayerFormValues> & { photoUrl?: string };
+  defaultValues?: Partial<PlayerFormValues> & {
+    photoUrl?: string;
+    isActive?: boolean;
+  };
   onSubmit: (data: PlayerFormValues, photo?: File) => void;
   isPending: boolean;
   onCancel: () => void;
@@ -44,12 +49,13 @@ const PlayerForm = ({ defaultValues, onSubmit, isPending, onCancel }: Props) => 
     resolver: zodResolver(playerSchema) as any,
     defaultValues: {
       nationality: "Ecuatoriana",
+      isActive: true,
       ...defaultValues,
     },
   });
 
   useEffect(() => {
-    reset({ nationality: "Ecuatoriana", ...defaultValues });
+    reset({ nationality: "Ecuatoriana", isActive: true, ...defaultValues });
     // Actualiza el preview cuando cambian los defaultValues (edición)
     setPhotoPreview(defaultValues?.photoUrl ? (getPhotoUrl(defaultValues.photoUrl) ?? null) : null);
   }, [defaultValues, reset]);
@@ -166,6 +172,30 @@ const PlayerForm = ({ defaultValues, onSubmit, isPending, onCancel }: Props) => 
                 {...register("address")}
               />
             </div>
+            {defaultValues?.id && (
+              <div className="sm:col-span-2 flex items-center gap-3 p-3 rounded-xl bg-slate-800/300 border border-slate-700/50">
+                <div className="relative inline-flex h-6 w-11 items-center">
+                  <input
+                    type="checkbox"
+                    id="isActive"
+                    className="peer appearance-none w-11 h-6 rounded-full bg-slate-700 checked:bg-sky-600 transition-colors cursor-pointer"
+                    {...register("isActive")}
+                  />
+                  <span className="absolute left-1 h-4 w-4 rounded-full bg-white transition-all peer-checked:left-6 cursor-pointer" />
+                </div>
+                <label
+                  htmlFor="isActive"
+                  className="cursor-pointer"
+                  // className="text-sm font-medium text-slate-300 cursor-pointer"
+                >
+                  {/* Jugador Activo */}
+                  <span className="block text-sm font-semibold text-white">Jugador Activo</span>
+                  <span className="block text-[11px] text-slate-500">
+                    Si se desactiva, el jugador no aparecerá en las listas de partidos ni reportes.
+                  </span>
+                </label>
+              </div>
+            )}
           </div>
         </section>
 

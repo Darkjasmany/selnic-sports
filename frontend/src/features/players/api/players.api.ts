@@ -19,6 +19,7 @@ export type Player = {
   guardianEmail?: string;
   guardianRelation?: "PADRE" | "MADRE" | "OTRO";
   createdAt: string;
+  isActive: boolean;
   teams: {
     isActive: boolean;
     team: {

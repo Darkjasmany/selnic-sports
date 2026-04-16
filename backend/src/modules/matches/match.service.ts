@@ -133,7 +133,8 @@ export class MatchService {
       where: { matchId },
     });
 
-    if (totalValidated >= 22) {
+    // !! Numero de jugadores para validar eran 22
+    if (totalValidated >= 2) {
       await prisma.match.update({
         where: { id: matchId },
         data: { status: "IN_PROGRESS" },

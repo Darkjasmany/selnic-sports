@@ -65,6 +65,7 @@ model Player {
   photoUrl      String?
   biometricData Json?
   biometricType BiometricType @default(FACIAL)
+  isActive      Boolean       @default(true)
 
   // Datos representante legal
   guardianName     String?
