@@ -3,7 +3,7 @@ import { AppError } from "@/middlewares/error.middleware";
 import { CreateTeamInput, UpdateTeamInput } from "./team.schema";
 
 export class TeamService {
-  static async findAll(categoryId?: string) {
+  static async findAll1(categoryId?: string) {
     return prisma.team.findMany({
       where: categoryId ? { categoryId } : undefined,
       orderBy: { name: "asc" },
@@ -11,6 +11,46 @@ export class TeamService {
         category: { select: { id: true, name: true } },
         _count: { select: { players: true } },
       },
+    });
+  }
+
+  static async findAll(categoryId?: string) {
+    const teams = await prisma.team.findMany({
+      where: categoryId ? { categoryId } : undefined,
+      orderBy: { name: "asc" },
+      include: {
+        category: { select: { id: true, name: true } },
+        players: {
+          select: {
+            isActive: true, // Este es el isActive de la tabla TeamPlayer (la relación)
+            player: {
+              select: {
+                isActive: true, // Este es el isActive de la tabla Player (el maestro)
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return teams.map(team => {
+      // 1. Total: Jugadores que están vinculados activamente a este equipo
+      const playersInTeam = team.players.filter(p => p.isActive);
+      const totalPlayers = playersInTeam.length;
+
+      // 2. Activos: De esos vinculados, cuántos tienen su perfil de Jugador activo
+      const activePlayers = playersInTeam.filter(p => p.player.isActive).length;
+
+      // Extraemos 'players' para no enviar todo el objeto anidado al frontend
+      const { players, ...teamData } = team;
+
+      return {
+        ...teamData,
+        stats: {
+          active: activePlayers,
+          total: totalPlayers,
+        },
+      };
     });
   }
 

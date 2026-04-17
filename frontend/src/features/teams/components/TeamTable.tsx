@@ -49,7 +49,28 @@ const TeamTable = ({ teams, onDelete, onEdit, isLoading }: Props) => {
               </td>
               <td className="py-3 px-4 text-slate-400">{team.location ?? "—"}</td>
               <td className="py-3 px-4 text-slate-400">{team.coachName ?? "—"}</td>
-              <td className="py-3 px-4 text-slate-400">{team._count.players}</td>
+              {/* <td className="py-3 px-4 text-slate-400">{team._count.players}</td> */}
+              <td className="py-3 px-4 text-slate-400">
+                {
+                  <div className="flex flex-col items-center">
+                    <div>
+                      <span className="text-white font-medium">{team.stats.active} Jugadores</span>{" "}
+                      -
+                      <span className="text-[10px] text-slate-500 uppercase tracking-tighter">
+                        {" "}
+                        {team.stats.total} Registrados en total
+                      </span>
+                    </div>
+                    {/* Una pequeña barra de progreso visual */}
+                    <div className="w-full h-1 bg-slate-800 rounded-full mt-2 overflow-hidden">
+                      <div
+                        className="h-full bg-sky-500"
+                        style={{ width: `${(team.stats.active / team.stats.total) * 100}%` }}
+                      />
+                    </div>
+                  </div>
+                }
+              </td>
               <td className="py-3 px-4 text-right">
                 <div className="flex items-center justify-end gap-2">
                   <button
