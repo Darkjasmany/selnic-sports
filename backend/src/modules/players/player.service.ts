@@ -6,7 +6,7 @@ export class PlayerService {
   static async findAll(search?: string, teamId?: string) {
     return prisma.player.findMany({
       where: {
-        isActive: true,
+        // isActive: true;
         AND: [
           teamId ? { teams: { some: { teamId, isActive: true } } } : {},
           search
@@ -42,7 +42,7 @@ export class PlayerService {
 
   static async findById(id: string) {
     const player = await prisma.player.findUnique({
-      where: { id, isActive: true },
+      where: { id },
       include: {
         teams: {
           where: { isActive: true },

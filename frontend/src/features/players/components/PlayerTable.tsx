@@ -47,6 +47,7 @@ const PlayerTable = ({
             <th className="text-left py-3 px-4 text-slate-400 font-medium">Equipo</th>
             <th className="text-left py-3 px-4 text-slate-400 font-medium">Categoría</th>
             <th className="text-left py-3 px-4 text-slate-400 font-medium">Biométrico</th>
+            <th className="text-left py-3 px-4 text-slate-400 font-medium">Estado</th>
             <th className="text-right py-3 px-4 text-slate-400 font-medium">Acciones</th>
           </tr>
         </thead>
@@ -103,6 +104,13 @@ const PlayerTable = ({
                       {player.biometricData ? "✓ Facial" : "Facial"}
                     </button>
                     // </span>
+                  )}
+                </td>
+                <td className="py-3 px-4">
+                  {player.isActive ? (
+                    <span className={"text-slate-400"}>Activo</span>
+                  ) : (
+                    <span className={"text-red-500/50"}>Inactivo</span>
                   )}
                 </td>
                 <td className="py-3 px-4 text-right">

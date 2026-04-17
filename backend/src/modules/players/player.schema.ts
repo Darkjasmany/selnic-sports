@@ -21,6 +21,7 @@ export const createPlayerSchema = z.object({
   address: z.string().trim().optional(),
   bloodType: z.string().trim().optional(),
   nationality: z.string().trim().default("Ecuatoriana"),
+  isActive: z.boolean().default(true),
   teamId: z.string({ required_error: "El equipo es requerido" }).cuid("ID de equipo inválido"),
 
   // Representante
