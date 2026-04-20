@@ -59,7 +59,7 @@ export class AdminService {
   }
 
   static async changePassword(id: string, input: ChangePasswordInput) {
-    this.findById(id);
+    await this.findById(id);
     const hashedPassword = await bcrypt.hash(input.newPassword, 12);
 
     await prisma.user.update({
@@ -87,12 +87,12 @@ export class AdminService {
   }
 
   static async delete(id: string) {
-    this.validateAdminRemoval(id);
+    await this.validateAdminRemoval(id);
     return await prisma.user.update({ where: { id }, data: { isActive: false } });
   }
 
   static async deleteDefinitive(id: string) {
-    this.validateAdminRemoval(id);
+    await this.validateAdminRemoval(id);
     return await prisma.user.delete({ where: { id } });
   }
 }

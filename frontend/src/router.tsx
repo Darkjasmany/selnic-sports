@@ -1,5 +1,6 @@
 import { AuthRoutes } from "@/features/auth/AuthRoutes";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import UsersPage from "./features/admin/pages/UsersPage";
 import CategoriesPage from "./features/categories/pages/CategoriesPage";
 import MatchesPage from "./features/matches/pages/MatchesPage";
 import MatchFlowPage from "./features/matches/pages/MatchFlowPage";
@@ -30,13 +31,13 @@ export default function Router() {
         >
           <Route index element={<Dashboard />} />
           {/* Aquí irán las rutas de cada módulo cuando los construyamos */}
-
           <Route path="teams" element={<TeamsPage />} />
           <Route path="players" element={<PlayersPage />} />
           <Route path="players/:id/report" element={<PlayerReportPage />} />
           <Route path="matches" element={<MatchesPage />} />
           <Route path="matches/:id/flow" element={<MatchFlowPage />} />
           <Route path="admin/categories" element={<CategoriesPage />} />
+          <Route path="admin/users" element={<UsersPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
