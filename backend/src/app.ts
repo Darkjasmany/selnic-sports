@@ -3,6 +3,7 @@ import express, { Application } from "express";
 import helmet from "helmet";
 import { join } from "node:path";
 import { errorMiddleware } from "./middlewares/error.middleware";
+import adminRouter from "./modules/admin/admin.router";
 import authRouter from "./modules/auth/auth.router";
 import categoryRouter from "./modules/categories/category.router";
 import matchRouter from "./modules/matches/match.router.js";
@@ -50,6 +51,7 @@ app.use("/api/categories", categoryRouter);
 app.use("/api/teams", teamsRouter);
 app.use("/api/players", playersRouter);
 app.use("/api/matches", matchRouter);
+app.use("/api/admin/users", adminRouter);
 
 // Fotos estáticas
 // Sirve los uploads desde la raíz, NO desde /api
