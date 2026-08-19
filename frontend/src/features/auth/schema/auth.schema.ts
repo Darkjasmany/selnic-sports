@@ -2,13 +2,14 @@ import { z } from "zod";
 
 // Validaciones reutilizables
 const emailValidation = z
-  .string({ required_error: "El email es requerido" })
+  .string({ message: "El email es requerido" })
   .email("Email inválido")
   .toLowerCase()
-  .trim();
+  .trim()
+  .min(1, "El email no puede estar vacío");
 
 const passwordValidation = z
-  .string({ required_error: "La contraseña es requerida" })
+  .string({ message: "La contraseña es requerida" })
   .min(8, "Mínimo 8 caracteres")
   .trim();
 
