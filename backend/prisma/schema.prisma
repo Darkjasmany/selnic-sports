@@ -112,6 +112,12 @@ model Player {
   guardianPhone    String?
   guardianEmail    String?
   guardianRelation String?
+
+  // Información académica (opcional)
+  educationalUnit    String?
+  educationalLevel   String?
+  educationalAddress String?
+
   teams            TeamPlayer[]
   matchValidations MatchValidation[]
   incidents        MatchIncident[]

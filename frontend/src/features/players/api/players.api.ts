@@ -18,8 +18,12 @@ export type Player = {
   guardianPhone?: string;
   guardianEmail?: string;
   guardianRelation?: "PADRE" | "MADRE" | "OTRO";
+  educationalUnit?: string;
+  educationalLevel?: string;
+  educationalAddress?: string;
   createdAt: string;
   isActive: boolean;
+  discipline?: { id: string; name: string };
   teams: {
     isActive: boolean;
     team: {
@@ -45,6 +49,9 @@ export type CreatePlayerInput = {
   guardianPhone?: string;
   guardianEmail?: string;
   guardianRelation?: "PADRE" | "MADRE" | "OTRO";
+  educationalUnit?: string;
+  educationalLevel?: string;
+  educationalAddress?: string;
 };
 
 export type UpdatePlayerInput = Partial<CreatePlayerInput>;

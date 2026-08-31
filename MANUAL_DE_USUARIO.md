@@ -30,7 +30,7 @@ El menú lateral (Sidebar) contiene los módulos disponibles. Dependiendo de tu 
 | Módulo         | Acceso          | Descripción |
 |----------------|-----------------|-------------|
 | 🏠 Dashboard   | Todos           | Resumen general del sistema |
-| 👥 Jugadores   | Todos           | Registro y gestión de jugadores |
+| 👥 Jugadores   | Todos           | Registro y gestión de jugadores (con carnets y QR) |
 | 🏆 Equipos     | Todos           | Registro y gestión de equipos por categoría y disciplina |
 | ⚽ Partidos    | Todos           | Creación de partidos y flujo de validación/incidencias |
 | 🏆 Torneos     | Todos           | Creación y gestión de torneos con grupos y eliminación |
@@ -61,10 +61,21 @@ Las categorías se organizan **por disciplina**. Ejemplo:
 - **Básquetbol:** Sub-14, Sub-17, Sub-21, Mayores.
 - **Ajedrez:** Sub-12, Sub-16, Absoluta.
 
-1. Ve a **Categorías**.
-2. Selecciona la **disciplina** a la que pertenece.
-3. Pulsa **+ Nueva categoría** e introduce el nombre.
-4. Guarda.
+### Crear una categoría
+1. Ve a **Categorías** en el menú lateral.
+2. En el formulario superior, selecciona primero la **disciplina** a la que pertenece.
+3. Escribe el **nombre** de la categoría (ej. Sub12, Mayores).
+4. Pulsa **Agregar**.
+
+### Filtrar categorías
+- Usa el campo de búsqueda para filtrar por nombre.
+- Usa el selector de disciplina para ver solo las categorías de una disciplina específica.
+
+### Editar una categoría
+- Haz clic en **Editar** en la tabla. Podrás modificar tanto el **nombre** como la **disciplina**.
+- Pulsa **Guardar** para confirmar.
+
+> La tabla muestra la columna **Disciplina** para identificar fácilmente a qué deporte pertenece cada categoría.
 
 ---
 
@@ -89,22 +100,47 @@ En la tabla verás el número de **jugadores activos** y el **total registrado**
 ## 6. Módulo de Jugadores
 
 1. Ve a **Jugadores**.
-2. (Opcional) Filtra por disciplina.
+2. (Opcional) Filtra por disciplina o busca por nombre/cédula.
 3. Pulsa **+ Nuevo jugador**.
-4. Completa las secciones:
+4. Completa las secciones del formulario:
    - **Información personal:** apellidos, nombres, cédula/DNI, fecha de nacimiento, teléfono,
      tipo de sangre, dirección.
    - **Filiación deportiva:** elige la **disciplina** y luego el **equipo y categoría**.
    - **Representante legal:** nombres, parentesco, teléfono y correo (contacto de emergencia).
+   - **Información académica (opcional):** unidad educativa, nivel y dirección de la unidad
+     educativa. Completa estos campos si el jugador es estudiante.
    - **Foto del jugador:** opcional (JPG, PNG o WebP, máximo 5 MB).
 5. Guarda.
 
 > Cada jugador pertenece a una disciplina (heredada del equipo). Un jugador desactivado
 > (**Jugador Activo** = off) no aparece en las listas de partidos.
 
-### 📄 Reporte del jugador
+### 📄 Reporte del jugador (Ficha)
 Desde la tabla puedes abrir el **reporte** de un jugador (`/players/:id/report`) para ver sus
-datos completos e historial.
+datos completos e historial. La ficha incluye:
+- Datos personales y foto
+- Datos deportivos (equipo, categoría, disciplina)
+- **Información académica** (solo si está registrada)
+- Representante legal (si está registrado)
+
+### 🪪 Carnet del jugador
+Desde la ficha del jugador puedes imprimir su **carnet individual** con código QR:
+1. Abre la ficha del jugador.
+2. Haz clic en **Carnet**.
+3. Se mostrará una vista previa del carnet con foto, datos del jugador y código QR.
+4. Haz clic en **Imprimir carnet** para imprimirlo.
+
+El código QR contiene la información básica del jugador para verificación rápida.
+
+### 🪪 Impresión masiva de carnets
+Para imprimir carnets de varios jugadores a la vez:
+1. Ve a **Jugadores**.
+2. Haz clic en **Imprimir Carnets** (en la parte superior).
+3. Usa los **filtros** para buscar jugadores por nombre, cédula o disciplina.
+4. Selecciona los jugadores haciendo clic en los **checkboxes** o usa **Seleccionar todos**.
+5. Haz clic en **Imprimir X carnets**.
+6. Se abrirá la vista de impresión con todos los carnets seleccionados en formato de cuadrícula
+   (2 columnas por hoja A4).
 
 ---
 

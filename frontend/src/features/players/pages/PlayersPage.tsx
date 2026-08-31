@@ -98,6 +98,12 @@ const PlayersPage = () => {
           </p>
         </div>
         <button
+          onClick={() => navigate("/players/bulk-carnets")}
+          className="bg-slate-700 hover:bg-slate-600 text-white text-sm font-medium px-4 py-2 rounded-lg transition"
+        >
+          🪪 Imprimir Carnets
+        </button>
+        <button
           onClick={() => handleOpen()}
           className="bg-sky-600 hover:bg-sky-500 text-white text-sm font-medium px-4 py-2 rounded-lg transition"
         >

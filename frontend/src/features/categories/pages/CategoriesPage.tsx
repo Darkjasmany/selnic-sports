@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useDisciplines } from "@/features/disciplines/hooks/useDisciplines";
 import CategoryForm from "../components/CategoryForm";
 import CategoryTable from "../components/CategoryTable";
 import {
@@ -10,8 +11,10 @@ import {
 
 const CategoriesPage = () => {
   const [search, setSearch] = useState("");
+  const [disciplineFilter, setDisciplineFilter] = useState("");
 
-  const { data: categories = [], isLoading } = useCategories();
+  const { data: disciplines = [] } = useDisciplines();
+  const { data: categories = [], isLoading } = useCategories(disciplineFilter || undefined);
   const createCategory = useCreateCategory();
   const updateCategory = useUpdateCategory();
   const deleteCategory = useDeleteCategory();
@@ -20,9 +23,8 @@ const CategoriesPage = () => {
     c.name.toLocaleLowerCase().includes(search.toLocaleLowerCase())
   );
 
-  // Ahora recibe el objeto que viene de Zod
-  const handleCreate = (data: { name: string }) => {
-    createCategory.mutate(data.name);
+  const handleCreate = (data: { name: string; disciplineId: string }) => {
+    createCategory.mutate(data);
   };
 
   return (
@@ -33,11 +35,15 @@ const CategoriesPage = () => {
       </div>
 
       <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 mb-5">
-        <CategoryForm onSubmit={handleCreate} isPending={createCategory.isPending} />
+        <CategoryForm
+          onSubmit={handleCreate}
+          isPending={createCategory.isPending}
+          disciplines={disciplines}
+        />
       </div>
 
       <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
-        <div className="p-4 border-b border-slate-800">
+        <div className="p-4 border-b border-slate-800 flex flex-wrap gap-3">
           <input
             type="text"
             placeholder="Buscar categoría..."
@@ -45,13 +51,26 @@ const CategoriesPage = () => {
             onChange={e => setSearch(e.target.value)}
             className="h-10 px-3 w-full max-w-sm rounded-lg bg-slate-800 border border-slate-700 text-white text-sm focus:ring-2 focus:ring-sky-500 outline-none"
           />
+          <select
+            className="h-10 px-3 rounded-lg bg-slate-800 border border-slate-700 text-white text-sm focus:ring-2 focus:ring-sky-500 outline-none"
+            value={disciplineFilter}
+            onChange={e => setDisciplineFilter(e.target.value)}
+          >
+            <option value="">Todas las disciplinas</option>
+            {disciplines.map(d => (
+              <option key={d.id} value={d.id}>
+                {d.name}
+              </option>
+            ))}
+          </select>
         </div>
 
         <CategoryTable
           categories={filtered}
           isLoading={isLoading}
           onDelete={id => deleteCategory.mutate(id)}
-          onUpdate={(id, name) => updateCategory.mutate({ id, name })}
+          onUpdate={(id, name, disciplineId) => updateCategory.mutate({ id, name, disciplineId })}
+          disciplines={disciplines}
         />
       </div>
     </div>

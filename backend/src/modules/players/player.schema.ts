@@ -33,6 +33,11 @@ export const createPlayerSchema = z.object({
   guardianPhone: z.string().trim().optional(),
   guardianEmail: z.string().email("Email inválido").optional().or(z.literal("")),
   guardianRelation: z.enum(["PADRE", "MADRE", "OTRO"]).optional(),
+
+  // Información académica (opcional)
+  educationalUnit: z.string().trim().optional(),
+  educationalLevel: z.string().trim().optional(),
+  educationalAddress: z.string().trim().optional(),
 });
 
 export const updatePlayerSchema = createPlayerSchema.partial();

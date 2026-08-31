@@ -38,12 +38,20 @@ const PlayerReportPage = () => {
         <h1 className="text-xl font-semibold text-white">
           Ficha de {player.firstName} {player.lastName}
         </h1>
-        <button
-          onClick={() => window.print()}
-          className="ml-auto bg-sky-600 hover:bg-sky-500 text-white text-sm font-medium px-4 py-2 rounded-lg transition"
-        >
-          🖨 Imprimir ficha
-        </button>
+        <div className="ml-auto flex gap-2">
+          <button
+            onClick={() => navigate(`/players/${player.id}/carnet`)}
+            className="bg-slate-700 hover:bg-slate-600 text-white text-sm font-medium px-4 py-2 rounded-lg transition"
+          >
+            🪪 Carnet
+          </button>
+          <button
+            onClick={() => window.print()}
+            className="bg-sky-600 hover:bg-sky-500 text-white text-sm font-medium px-4 py-2 rounded-lg transition"
+          >
+            🖨 Imprimir ficha
+          </button>
+        </div>
       </div>
       <PlayerReport player={player} />
     </div>

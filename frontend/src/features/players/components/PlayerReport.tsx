@@ -99,10 +99,39 @@ const PlayerReport = ({ player }: Props) => {
             </div>
             <div>
               <p className="text-xs text-gray-500 uppercase font-medium">Disciplina</p>
-              <p className="text-sm border-b border-gray-300 pb-1">Fútbol</p>
+              <p className="text-sm border-b border-gray-300 pb-1">
+                {player.discipline?.name ?? "—"}
+              </p>
             </div>
           </div>
         </div>
+
+        {/* Información académica (condicional) */}
+        {(player.educationalUnit || player.educationalLevel || player.educationalAddress) && (
+          <div className="border border-gray-300 rounded p-4 mb-4">
+            <h2 className="text-xs font-bold uppercase text-gray-600 mb-3">Información académica</h2>
+            <div className="grid grid-cols-2 gap-4">
+              {player.educationalUnit && (
+                <div>
+                  <p className="text-xs text-gray-500 uppercase font-medium">Unidad Educativa</p>
+                  <p className="text-sm border-b border-gray-300 pb-1">{player.educationalUnit}</p>
+                </div>
+              )}
+              {player.educationalLevel && (
+                <div>
+                  <p className="text-xs text-gray-500 uppercase font-medium">Nivel</p>
+                  <p className="text-sm border-b border-gray-300 pb-1">{player.educationalLevel}</p>
+                </div>
+              )}
+              {player.educationalAddress && (
+                <div className="sm:col-span-2">
+                  <p className="text-xs text-gray-500 uppercase font-medium">Dirección de la Unidad Educativa</p>
+                  <p className="text-sm border-b border-gray-300 pb-1">{player.educationalAddress}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Representante legal */}
         {player.guardianName && (

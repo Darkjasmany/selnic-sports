@@ -11,7 +11,7 @@ El proyecto es una aplicación web de tipo **SPA (Single Page Application)** con
 de **frontend y backend separados**:
 
 - **Frontend:** React 19 + TypeScript + Vite 7 + Tailwind CSS 4 + React Hook Form + Zod +
-  TanStack Query (React Query) + Zustand.
+  TanStack Query (React Query) + Zustand + **qrcode.react** (generación de QR codes).
 - **Backend:** Node.js + TypeScript + Express + Prisma ORM.
 - **Base de datos:** PostgreSQL (`selnic_sports_db` en `localhost:5432`).
 
@@ -199,6 +199,8 @@ Fuente de verdad: `backend/prisma/schema.prisma`. Modelos principales:
 - **`Category`** — categoría de una disciplina (`disciplineId` FK).
 - **`Team`** — equipo, pertenece a una `Discipline` y una `Category`.
 - **`Player`** — jugador, con `disciplineId?` opcional (se deriva/auto-asigna del equipo).
+  Campos opcionales de información académica: `educationalUnit`, `educationalLevel`,
+  `educationalAddress`.
 
 ### 7.2 Partidos e incidencias
 - **`Match`** — partido entre `homeTeam` y `awayTeam` de una `category`. Campos de torneo
@@ -248,8 +250,8 @@ Base URL backend: `http://localhost:3000/api`
 | Método | Ruta                        | Descripción |
 |--------|-----------------------------|-------------|
 | GET    | `/categories?disciplineId=` | Listar categorías (filtradas por disciplina) |
-| POST   | `/categories`               | Crear categoría |
-| PATCH  | `/categories/:id`           | Actualizar categoría |
+| POST   | `/categories`               | Crear categoría (requiere `name` + `disciplineId`) |
+| PATCH  | `/categories/:id`           | Actualizar categoría (parcial: `name` y/o `disciplineId`) |
 | DELETE | `/categories/:id`           | Eliminar categoría |
 
 ### Equipos
@@ -331,6 +333,29 @@ Zod contra el enum `IncidentType`.
 En la validación de jugadores, el umbral de jugadores requerido depende de la **disciplina**
 (`playersPerField * 2`, ej. 22 en fútbol, 10 en básquetbol, 2 en ajedrez).
 
+### 9.6 Carnet de jugador con código QR
+El sistema genera carnets individuales para cada jugador en formato de tarjeta credencial
+(85mm x 55mm). El código QR contiene un JSON con la información básica del jugador:
+```json
+{
+  "name": "Nombre Apellido",
+  "documentId": "1234567890",
+  "team": "Nombre Equipo",
+  "category": "Sub15",
+  "discipline": "Fútbol",
+  "birthDate": "2010-05-15"
+}
+```
+
+**Componentes frontend:**
+- `PlayerCarnet.tsx` — Renderiza un carnet individual usando `qrcode.react` para generar el QR.
+- `BulkCarnetPrint.tsx` — Renderiza múltiples carnets en cuadrícula (2 columnas) para impresión A4.
+- `PlayerCarnetPage.tsx` — Página de carnet individual con botón imprimir.
+- `BulkCarnetPage.tsx` — Página de impresión masiva con selección múltiple de jugadores.
+
+**Estilos de impresión:** Se usa `@media print` para ocultar la interfaz y mostrar solo los
+carnets. Los carnets se distribuyen en grid de 2 columnas para aprovechar el papel A4.
+
 ---
 
 ## 10. Rutas del frontend (`frontend/src/router.tsx`)
@@ -342,6 +367,8 @@ En la validación de jugadores, el umbral de jugadores requerido depende de la *
 | `/teams`                | `TeamsPage`                   | Equipos |
 | `/players`              | `PlayersPage`                 | Jugadores |
 | `/players/:id/report`   | `PlayerReportPage`            | Reporte de jugador |
+| `/players/:id/carnet`   | `PlayerCarnetPage`            | Carnet individual del jugador con QR |
+| `/players/bulk-carnets` | `BulkCarnetPage`              | Impresión masiva de carnets |
 | `/matches`              | `MatchesPage`                 | Partidos |
 | `/matches/:id/flow`     | `MatchFlowPage`               | Flujo de partido (validación/incidencias/ficha) |
 | `/disciplines`          | `DisciplinesPage`             | Disciplinas (admin) |
@@ -374,6 +401,18 @@ En la validación de jugadores, el umbral de jugadores requerido depende de la *
 
 5. **Base URL del frontend:** el `BrowserRouter` usa el `basename /selnic-sports`. Si despliegas
    en otra ruta, ajusta el `base` en `frontend/vite.config.ts` y el `basename` en `router.tsx`.
+
+6. **Categorías y disciplinas:** el formulario de categorías ahora incluye un selector de
+   disciplina obligatorio. La tabla de categorías muestra la columna "Disciplina". El backend
+   ya requería `disciplineId` al crear categorías, pero el frontend no lo enviaba anteriormente.
+
+7. **Información académica del jugador:** los campos `educationalUnit`, `educationalLevel` y
+   `educationalAddress` son opcionales. Se muestran en el formulario del jugador y se renderizan
+   condicionalmente en la ficha (reporte) solo si al menos uno tiene valor.
+
+8. **Código QR en carnets:** se usa la librería `qrcode.react` (instalada en el frontend). Los
+   carnets se generan en el cliente sin llamadas a APIs externas. El QR contiene JSON con datos
+   básicos del jugador.
 
 ---
 

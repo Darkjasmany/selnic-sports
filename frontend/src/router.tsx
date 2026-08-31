@@ -5,6 +5,8 @@ import CategoriesPage from "./features/categories/pages/CategoriesPage";
 import DisciplinesPage from "./features/disciplines/pages/DisciplinesPage";
 import MatchesPage from "./features/matches/pages/MatchesPage";
 import MatchFlowPage from "./features/matches/pages/MatchFlowPage";
+import BulkCarnetPage from "./features/players/pages/BulkCarnetPage";
+import PlayerCarnetPage from "./features/players/pages/PlayerCarnetPage";
 import PlayerReportPage from "./features/players/pages/PlayerReportPage";
 import PlayersPage from "./features/players/pages/PlayersPage";
 import TeamsPage from "./features/teams/pages/TeamsPage";
@@ -38,6 +40,8 @@ export default function Router() {
           <Route path="teams" element={<TeamsPage />} />
           <Route path="players" element={<PlayersPage />} />
           <Route path="players/:id/report" element={<PlayerReportPage />} />
+          <Route path="players/:id/carnet" element={<PlayerCarnetPage />} />
+          <Route path="players/bulk-carnets" element={<BulkCarnetPage />} />
           <Route path="matches" element={<MatchesPage />} />
           <Route path="matches/:id/flow" element={<MatchFlowPage />} />
           <Route path="disciplines" element={<DisciplinesPage />} />
