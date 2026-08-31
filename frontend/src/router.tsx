@@ -18,7 +18,7 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
 
 export default function Router() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/futbol-system">
       <Routes>
         <Route path="/auth/*" element={<AuthRoutes />} />
         <Route
