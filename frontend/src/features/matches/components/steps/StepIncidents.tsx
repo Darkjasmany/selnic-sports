@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import type { Incident, IncidentType, Match, MatchPlayer, TeamSide } from "../../api/matches.api";
 import { useSaveIncidents } from "../../hooks/useMatches";
+import { getIncidentLabels } from "../../utils/incidentLabels";
 
 const schema = z.object({
   homeScore: z.number().int().min(0),
@@ -21,17 +22,8 @@ type Props = {
 
 type IncidentRow = Incident & { tempId: string };
 
-const INCIDENT_LABELS: Record<IncidentType, string> = {
-  GOAL: "⚽ Gol",
-  YELLOW_CARD: "🟨 Tarjeta amarilla",
-  RED_CARD: "🟥 Tarjeta roja",
-  CORNER: "🚩 Corner",
-  FOUL: "⚠️ Falta",
-  SUBSTITUTION: "🔄 Cambio",
-  NOTE: "📝 Nota",
-};
-
 export default function StepIncidents({ match, players, onComplete }: Props) {
+  const labels = getIncidentLabels(match.homeTeam.discipline?.name);
   const [incidents, setIncidents] = useState<IncidentRow[]>([]);
   const saveIncidents = useSaveIncidents(match.id);
 
@@ -45,11 +37,12 @@ export default function StepIncidents({ match, players, onComplete }: Props) {
   });
 
   const addIncident = () => {
+    const firstType = (Object.keys(labels)[0] ?? "NOTE") as IncidentType;
     setIncidents(prev => [
       ...prev,
       {
         tempId: crypto.randomUUID(),
-        type: "GOAL",
+        type: firstType,
         teamSide: "HOME",
       },
     ]);
@@ -143,7 +136,7 @@ export default function StepIncidents({ match, players, onComplete }: Props) {
                              border-slate-700 text-white text-xs focus:outline-none
                              focus:ring-1 focus:ring-sky-500"
                 >
-                  {Object.entries(INCIDENT_LABELS).map(([k, v]) => (
+                  {Object.entries(labels).map(([k, v]) => (
                     <option key={k} value={k}>
                       {v}
                     </option>

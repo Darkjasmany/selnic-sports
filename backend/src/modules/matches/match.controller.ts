@@ -7,9 +7,10 @@ type MatchParams = {
 };
 
 export class MatchController {
-  static getAll = async (_req: Request, res: Response, next: NextFunction) => {
+  static getAll = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const matches = await MatchService.findAll();
+      const { tournamentId } = req.query as { tournamentId?: string };
+      const matches = await MatchService.findAll(tournamentId);
       res.json({ success: true, data: matches });
     } catch (error) {
       next(error);

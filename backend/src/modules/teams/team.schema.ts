@@ -6,6 +6,9 @@ export const createTeamSchema = z.object({
     .min(2, "Mínimo 2 caracteres")
     .max(100, "Máximo 100 caracteres")
     .trim(),
+  disciplineId: z
+    .string({ required_error: "La disciplina es requerida" })
+    .cuid("ID de disciplina inválido"),
   categoryId: z
     .string({ required_error: "La categoría es requerida" })
     .cuid("ID de categoría inválido"),

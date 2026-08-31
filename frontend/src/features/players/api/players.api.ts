@@ -36,6 +36,7 @@ export type CreatePlayerInput = {
   birthDate: string;
   documentId: string;
   teamId: string;
+  disciplineId?: string;
   phone?: string;
   address?: string;
   bloodType?: string;
@@ -48,9 +49,15 @@ export type CreatePlayerInput = {
 
 export type UpdatePlayerInput = Partial<CreatePlayerInput>;
 
-export async function getPlayers(search?: string, teamId?: string): Promise<Player[]> {
+export async function getPlayers(
+  search?: string,
+  teamId?: string,
+  disciplineId?: string
+): Promise<Player[]> {
   try {
-    const { data } = await api.get("/players", { params: { search, teamId } });
+    const { data } = await api.get("/players", {
+      params: { search, teamId, disciplineId },
+    });
     return data.data;
   } catch (error) {
     handleError(error);

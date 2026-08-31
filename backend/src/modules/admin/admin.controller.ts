@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 import { AdminService } from "./admin.service";
-import { ChangePasswordInput, CreateUserInput, UpdateUserInput } from "./admin.shema";
+import { ChangePasswordInput, CreateUserInput, UpdateUserInput } from "./admin.schema";
 
 type AdminParams = {
   id: string;

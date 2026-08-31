@@ -32,7 +32,7 @@ export const useAuthStore = create<AuthStore>()(
       isAuthenticated: () => !!get().token,
     }),
     {
-      name: 'futbol-auth', // clave en localStorage
+      name: 'selnic-sports-auth', // clave en localStorage
     }
   )
 )

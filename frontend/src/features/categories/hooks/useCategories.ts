@@ -33,10 +33,10 @@ Cuando usas queryClient.invalidateQueries({ queryKey: [CATEGORIES_KEY] }), le es
 
 export const CATEGORIES_KEY = "categories";
 
-export function useCategories() {
+export function useCategories(disciplineId?: string) {
   return useQuery({
-    queryKey: [CATEGORIES_KEY],
-    queryFn: getCategories,
+    queryKey: [CATEGORIES_KEY, disciplineId],
+    queryFn: () => getCategories(disciplineId),
   });
 }
 

@@ -2,7 +2,7 @@ import { authenticate, authorize } from "@/middlewares/auth.middleware";
 import { validateBody } from "@/middlewares/validate.middleware";
 import { Router } from "express";
 import { AdminController } from "./admin.controller";
-import { changePasswordSchema, createUserSchema, updateUserSchema } from "./admin.shema";
+import { changePasswordSchema, createUserSchema, updateUserSchema } from "./admin.schema";
 
 const router: Router = Router();
 

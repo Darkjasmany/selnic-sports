@@ -12,6 +12,21 @@ export type IncidentType =
   | "CORNER"
   | "FOUL"
   | "SUBSTITUTION"
+  | "BASKET_2"
+  | "BASKET_3"
+  | "FREE_THROW"
+  | "FOUL_BASKET"
+  | "BLOCK"
+  | "TURNOVER"
+  | "TIMEOUT"
+  | "REBOUND"
+  | "ASSIST"
+  | "STEAL"
+  | "CHECK"
+  | "CHECKMATE"
+  | "RESIGNATION"
+  | "DRAW_CHESS"
+  | "CAPTURED_PIECE"
   | "NOTE";
 
 export type MatchPlayer = {
@@ -30,9 +45,15 @@ export type Match = {
   homeScore?: number;
   awayScore?: number;
   notes?: string;
-  homeTeam: { id: string; name: string };
+  homeTeam: {
+    id: string;
+    name: string;
+    discipline?: { id: string; name: string };
+  };
   awayTeam: { id: string; name: string };
   category: { id: string; name: string };
+  tournament?: { id: string; name: string } | null;
+  group?: { id: string; name: string } | null;
   validations: {
     playerId: string;
     teamSide: TeamSide;

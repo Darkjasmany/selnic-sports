@@ -4,9 +4,25 @@ import { CreateMatchInput, SaveIncidentsInput, ValidatePlayerInput } from "./mat
 
 // Incluye todo lo necesario para mostrar un partido completo
 const matchInclude = {
-  homeTeam: { select: { id: true, name: true } },
-  awayTeam: { select: { id: true, name: true } },
+  homeTeam: {
+    select: {
+      id: true,
+      name: true,
+      disciplineId: true,
+      discipline: { select: { id: true, name: true, playersPerField: true } },
+    },
+  },
+  awayTeam: {
+    select: {
+      id: true,
+      name: true,
+      disciplineId: true,
+      discipline: { select: { id: true, name: true, playersPerField: true } },
+    },
+  },
   category: { select: { id: true, name: true } },
+  tournament: { select: { id: true, name: true } },
+  group: { select: { id: true, name: true } },
   validations: {
     include: {
       player: {
@@ -25,18 +41,25 @@ const matchInclude = {
       player: {
         select: { id: true, firstName: true, lastName: true },
       },
+      team: { select: { id: true, name: true } },
+      assistPlayer: {
+        select: { id: true, firstName: true, lastName: true },
+      },
     },
     orderBy: { minute: "asc" as const },
   },
 };
 
 export class MatchService {
-  static async findAll() {
+  static async findAll(tournamentId?: string) {
     return prisma.match.findMany({
+      where: tournamentId ? { tournamentId } : undefined,
       include: {
         homeTeam: { select: { id: true, name: true } },
         awayTeam: { select: { id: true, name: true } },
         category: { select: { id: true, name: true } },
+        tournament: { select: { id: true, name: true } },
+        group: { select: { id: true, name: true } },
         _count: { select: { validations: true } },
       },
       orderBy: { scheduledAt: "desc" },
@@ -53,7 +76,6 @@ export class MatchService {
   }
 
   static async create(input: CreateMatchInput) {
-    // Verifica que los equipos existen y son de la misma categoría
     const [homeTeam, awayTeam] = await Promise.all([
       prisma.team.findUnique({ where: { id: input.homeTeamId } }),
       prisma.team.findUnique({ where: { id: input.awayTeamId } }),
@@ -66,10 +88,34 @@ export class MatchService {
       throw new AppError(400, "Los equipos deben ser de la misma categoría");
     }
 
+    if (homeTeam.disciplineId !== awayTeam.disciplineId) {
+      throw new AppError(400, "Los equipos deben ser de la misma disciplina");
+    }
+
+    // Si es partido de torneo, verificar consistencia
+    if (input.tournamentId) {
+      const tournament = await prisma.tournament.findUnique({
+        where: { id: input.tournamentId },
+      });
+      if (!tournament) throw new AppError(404, "Torneo no encontrado");
+      if (tournament.categoryId !== homeTeam.categoryId)
+        throw new AppError(400, "El torneo no pertenece a esta categoría");
+
+      if (input.groupId) {
+        const group = await prisma.group.findFirst({
+          where: { id: input.groupId, tournamentId: input.tournamentId },
+        });
+        if (!group) throw new AppError(400, "El grupo no pertenece al torneo");
+      }
+    }
+
     return prisma.match.create({
       data: {
         ...input,
         scheduledAt: new Date(input.scheduledAt),
+        scheduledTime: input.scheduledTime
+          ? new Date(input.scheduledTime)
+          : undefined,
         status: "VALIDATING_PLAYERS",
       },
       include: matchInclude,
@@ -128,13 +174,20 @@ export class MatchService {
       },
     });
 
-    // Verifica si ya están los 22 validados para cambiar status
+    // Verifica si ya están los jugadores validados para cambiar status.
+    // El umbral depende de la disciplina (11 fútbol, 5 básquet, 1 ajedrez).
     const totalValidated = await prisma.matchValidation.count({
       where: { matchId },
     });
 
-    // !! Numero de jugadores para validar eran 22
-    if (totalValidated >= 2) {
+    const homeTeam = await prisma.team.findUnique({
+      where: { id: match.homeTeamId },
+      include: { discipline: true },
+    });
+    const playersPerField = homeTeam?.discipline.playersPerField ?? 11;
+    const requiredTotal = playersPerField * 2;
+
+    if (totalValidated >= requiredTotal) {
       await prisma.match.update({
         where: { id: matchId },
         data: { status: "IN_PROGRESS" },
@@ -161,11 +214,17 @@ export class MatchService {
 
       if (input.incidents.length > 0) {
         await tx.matchIncident.createMany({
-          data: input.incidents.map(inc => ({ matchId, ...inc })),
+          data: input.incidents.map(inc => ({
+            matchId,
+            ...inc,
+            teamId:
+              inc.teamId ??
+              (inc.teamSide === "HOME" ? match.homeTeamId : match.awayTeamId),
+          })),
         });
       }
 
-      return tx.match.update({
+      const updatedMatch = await tx.match.update({
         where: { id: matchId },
         data: {
           homeScore: input.homeScore,
@@ -175,7 +234,86 @@ export class MatchService {
         },
         include: matchInclude,
       });
+
+      // Si es parte de un torneo con grupo, actualizar la tabla de posiciones
+      if (match.groupId) {
+        await this.updateStandings(tx, matchId, input.homeScore, input.awayScore);
+      }
+
+      return updatedMatch;
     });
+  }
+
+  private static async updateStandings(
+    tx: any,
+    matchId: string,
+    homeScore: number | null,
+    awayScore: number | null
+  ) {
+    const match = await tx.match.findUnique({
+      where: { id: matchId },
+      select: { groupId: true, homeTeamId: true, awayTeamId: true },
+    });
+    if (!match?.groupId) return;
+
+    const homeGoals = homeScore ?? 0;
+    const awayGoals = awayScore ?? 0;
+
+    const homeRow = await tx.teamGroup.findUnique({
+      where: {
+        teamId_groupId: { teamId: match.homeTeamId, groupId: match.groupId },
+      },
+    });
+    const awayRow = await tx.teamGroup.findUnique({
+      where: {
+        teamId_groupId: { teamId: match.awayTeamId, groupId: match.groupId },
+      },
+    });
+
+    if (homeRow && awayRow) {
+      let homePoints = homeRow.points;
+      let awayPoints = awayRow.points;
+      let win = 0, draw = 0, loss = 0;
+      let aWin = 0, aDraw = 0, aLoss = 0;
+
+      if (homeGoals > awayGoals) {
+        homePoints += 3;
+        win = 1;
+        aLoss = 1;
+      } else if (homeGoals < awayGoals) {
+        awayPoints += 3;
+        aWin = 1;
+        loss = 1;
+      } else {
+        homePoints += 1;
+        awayPoints += 1;
+        draw = 1;
+        aDraw = 1;
+      }
+
+      await tx.teamGroup.update({
+        where: { id: homeRow.id },
+        data: {
+          points: homePoints,
+          goalsFor: homeRow.goalsFor + homeGoals,
+          goalsAgainst: homeRow.goalsAgainst + awayGoals,
+          wins: homeRow.wins + win,
+          draws: homeRow.draws + draw,
+          losses: homeRow.losses + loss,
+        },
+      });
+      await tx.teamGroup.update({
+        where: { id: awayRow.id },
+        data: {
+          points: awayPoints,
+          goalsFor: awayRow.goalsFor + awayGoals,
+          goalsAgainst: awayRow.goalsAgainst + homeGoals,
+          wins: awayRow.wins + aWin,
+          draws: awayRow.draws + aDraw,
+          losses: awayRow.losses + aLoss,
+        },
+      });
+    }
   }
 
   static async getMatchPlayers(matchId: string) {

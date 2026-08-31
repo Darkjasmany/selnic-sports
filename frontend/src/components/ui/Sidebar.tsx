@@ -13,7 +13,9 @@ const navItems: NavItem[] = [
   { label: "Jugadores", path: "/players", icon: "👥" },
   { label: "Equipos", path: "/teams", icon: "🏆" },
   { label: "Partidos", path: "/matches", icon: "⚽" },
+  { label: "Torneos", path: "/tournaments", icon: "🏆" },
   { label: "Usuarios", path: "/admin/users", icon: "⚙️", adminOnly: true },
+  { label: "Disciplinas", path: "/disciplines", icon: "🏅", adminOnly: true },
   { label: "Categorías", path: "/admin/categories", icon: "🏷️", adminOnly: true },
 ];
 

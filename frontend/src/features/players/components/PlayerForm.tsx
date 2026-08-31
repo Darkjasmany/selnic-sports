@@ -13,6 +13,7 @@ const playerSchema = z.object({
   lastName: z.string().min(2, "Mínimo 2 caracteres").trim(),
   documentId: z.string().min(8, "Mínimo 8 caracteres").trim(),
   birthDate: z.string().min(1, "La fecha es requerida"),
+  disciplineId: z.string().optional(),
   teamId: z.string().min(1, "Selecciona un equipo"),
   phone: z.string().trim().optional().or(z.literal("")),
   address: z.string().trim().optional(),
@@ -60,12 +61,28 @@ const PlayerForm = ({ defaultValues, onSubmit, isPending, onCancel }: Props) => 
     setPhotoPreview(defaultValues?.photoUrl ? (getPhotoUrl(defaultValues.photoUrl) ?? null) : null);
   }, [defaultValues, reset]);
 
-  const { data: teams = [] } = useQuery({
-    // queryKey: ["team-select"],
-    queryKey: [TEAMS_KEY],
+  const [disciplineId, setDisciplineId] = useState<string>(defaultValues?.disciplineId ?? "");
+
+  const { data: disciplines } = useQuery({
+    queryKey: ["disciplines"],
     queryFn: async () => {
-      const { data } = await api.get("/teams");
-      return data.data as { id: string; name: string; category: { name: string } }[];
+      const { data } = await api.get("/disciplines");
+      return data.data as { id: string; name: string }[];
+    },
+  });
+
+  const { data: teams = [] } = useQuery({
+    queryKey: [TEAMS_KEY, disciplineId],
+    queryFn: async () => {
+      const { data } = await api.get("/teams", {
+        params: disciplineId ? { disciplineId } : undefined,
+      });
+      return data.data as {
+        id: string;
+        name: string;
+        disciplineId: string;
+        category: { name: string };
+      }[];
     },
   });
 
@@ -85,7 +102,7 @@ const PlayerForm = ({ defaultValues, onSubmit, isPending, onCancel }: Props) => 
   };
 
   const handleInternalSubmit = (data: PlayerFormValues) => {
-    onSubmit(data, photoFile ?? undefined);
+    onSubmit({ ...data, disciplineId: data.disciplineId || disciplineId || undefined }, photoFile ?? undefined);
   };
 
   // Estilos de Tailwind extraídos para limpieza
@@ -208,9 +225,28 @@ const PlayerForm = ({ defaultValues, onSubmit, isPending, onCancel }: Props) => 
           </header>
           <div className="grid grid-cols-1 gap-5">
             <div>
+              <label className={label}>Disciplina *</label>
+              <select
+                className={getFieldClass(false)}
+                value={disciplineId}
+                onChange={e => setDisciplineId(e.target.value)}
+              >
+                <option value="">Selecciona la disciplina...</option>
+                {disciplines?.map(d => (
+                  <option key={d.id} value={d.id}>
+                    {d.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
               <label className={label}>Equipo y Categoría *</label>
               <select className={getFieldClass(!!errors.teamId)} {...register("teamId")}>
-                <option value="">Selecciona el equipo actual...</option>
+                <option value="">
+                  {disciplineId
+                    ? "Selecciona el equipo actual..."
+                    : "Primero selecciona disciplina"}
+                </option>
                 {teams.map(team => (
                   <option key={team.id} value={team.id}>
                     {team.name} — {team.category.name}

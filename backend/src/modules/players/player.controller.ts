@@ -10,8 +10,12 @@ type PlayerParams = {
 export class PlayerController {
   static getAll = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { search, teamId } = req.query as { search?: string; teamId?: string };
-      const players = await PlayerService.findAll(search, teamId);
+      const { search, teamId, disciplineId } = req.query as {
+        search?: string;
+        teamId?: string;
+        disciplineId?: string;
+      };
+      const players = await PlayerService.findAll(search, teamId, disciplineId);
       res.json({ success: true, data: players });
     } catch (error) {
       next(error);

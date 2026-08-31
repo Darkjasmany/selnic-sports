@@ -54,18 +54,26 @@ const TeamTable = ({ teams, onDelete, onEdit, isLoading }: Props) => {
                 {
                   <div className="flex flex-col items-center">
                     <div>
-                      <span className="text-white font-medium">{team.stats.active} Jugadores</span>{" "}
+                      <span className="text-white font-medium">
+                        {team.stats?.active ?? team._count?.players ?? 0} Jugadores
+                      </span>{" "}
                       -
                       <span className="text-[10px] text-slate-500 uppercase tracking-tighter">
                         {" "}
-                        {team.stats.total} Registrados en total
+                        {team.stats?.total ?? team._count?.players ?? 0} Registrados en total
                       </span>
                     </div>
                     {/* Una pequeña barra de progreso visual */}
                     <div className="w-full h-1 bg-slate-800 rounded-full mt-2 overflow-hidden">
                       <div
                         className="h-full bg-sky-500"
-                        style={{ width: `${(team.stats.active / team.stats.total) * 100}%` }}
+                        style={{
+                          width: `${
+                            team.stats?.total && team.stats.total > 0
+                              ? (team.stats.active / team.stats.total) * 100
+                              : 0
+                          }%`,
+                        }}
                       />
                     </div>
                   </div>

@@ -3,9 +3,11 @@ import { CATEGORIES_KEY } from "@/features/categories/hooks/useCategories";
 import { TEAMS_KEY } from "@/features/teams/hooks/useTeams";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 const matchSchema = z.object({
+  disciplineId: z.string().min(1, "Selecciona una disciplina"),
   categoryId: z.string().min(1, "Selecciona una categoría"),
   homeTeamId: z.string().min(1, "Selecciona el equipo local"),
   awayTeamId: z.string().min(1, "Selecciona el equipo visitante"),
@@ -25,20 +27,41 @@ const MatchForm = ({ onSubmit, isPending, onCancel }: Props) => {
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<MatchFormValues>({
     resolver: zodResolver(matchSchema),
   });
 
   const selectedCategory = watch("categoryId");
+  const [disciplineId, setDisciplineId] = useState("");
+  const watchedDiscipline = watch("disciplineId");
 
-  // Traer equipos cuando se seleccione una categoría
-  const { data: categories = [] } = useQuery({
-    queryKey: [CATEGORIES_KEY],
+  useEffect(() => {
+    setDisciplineId(watchedDiscipline);
+    if (disciplineId && watchedDiscipline !== disciplineId) {
+      setValue("categoryId", "");
+    }
+  }, [watchedDiscipline, disciplineId, setValue]);
+
+  const { data: disciplines = [] } = useQuery({
+    queryKey: ["disciplines"],
     queryFn: async () => {
-      const { data } = await api.get("/categories");
+      const { data } = await api.get("/disciplines");
       return data.data as { id: string; name: string }[];
     },
+  });
+
+  // Traer categorías cuando se seleccione una disciplina
+  const { data: categories = [] } = useQuery({
+    queryKey: [CATEGORIES_KEY, disciplineId],
+    queryFn: async () => {
+      const { data } = await api.get("/categories", {
+        params: disciplineId ? { disciplineId } : undefined,
+      });
+      return data.data as { id: string; name: string }[];
+    },
+    enabled: !!disciplineId,
   });
 
   const { data: teams = [] } = useQuery({
@@ -63,9 +86,30 @@ const MatchForm = ({ onSubmit, isPending, onCancel }: Props) => {
   return (
     <form action="" onSubmit={handleSubmit(handleInternalSubmit)} className="flex flex-col gap-4">
       <div>
+        <label className="text-xs text-slate-400 mb-1 block">Disciplina *</label>
+        <select className={input(!!errors.disciplineId)} {...register("disciplineId")}>
+          <option value="">Selecciona una disciplina</option>
+          {disciplines.map(d => (
+            <option key={d.id} value={d.id}>
+              {d.name}
+            </option>
+          ))}
+        </select>
+        {errors.disciplineId && (
+          <p className="text-red-400 text-xs mt-1">{errors.disciplineId.message}</p>
+        )}
+      </div>
+
+      <div>
         <label className="text-xs text-slate-400 mb-1 block">Categoría *</label>
-        <select className={input(!!errors.categoryId)} {...register("categoryId")}>
-          <option value="">Seleccione una categoría</option>
+        <select
+          className={input(!!errors.categoryId)}
+          disabled={!disciplineId}
+          {...register("categoryId")}
+        >
+          <option value="">
+            {disciplineId ? "Seleccione una categoría" : "Primero selecciona disciplina"}
+          </option>
           {categories.map(category => (
             <option key={category.id} value={category.id}>
               {category.name}

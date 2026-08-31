@@ -6,9 +6,11 @@ import { errorMiddleware } from "./middlewares/error.middleware";
 import adminRouter from "./modules/admin/admin.router";
 import authRouter from "./modules/auth/auth.router";
 import categoryRouter from "./modules/categories/category.router";
+import disciplineRouter from "./modules/disciplines/discipline.router";
 import matchRouter from "./modules/matches/match.router.js";
 import playersRouter from "./modules/players/player.router";
 import teamsRouter from "./modules/teams/team.router";
+import tournamentRouter from "./modules/tournaments/tournament.router";
 
 const app: Application = express();
 
@@ -47,10 +49,12 @@ app.get("/health", (_req, res) => {
 
 // Aquí irán tus rutas cuando las vayas creando
 app.use("/api/auth", authRouter);
+app.use("/api/disciplines", disciplineRouter);
 app.use("/api/categories", categoryRouter);
 app.use("/api/teams", teamsRouter);
 app.use("/api/players", playersRouter);
 app.use("/api/matches", matchRouter);
+app.use("/api/tournaments", tournamentRouter);
 app.use("/api/admin/users", adminRouter);
 
 // Fotos estáticas

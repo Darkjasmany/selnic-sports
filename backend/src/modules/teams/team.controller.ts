@@ -8,9 +8,12 @@ type TeamParams = {
 export class TeamController {
   static getAll = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      // Permite filtrar por categoría: /api/teams?categoryId=xxx
-      const { categoryId } = req.query as { categoryId?: string };
-      const teams = await TeamService.findAll(categoryId);
+      // Permite filtrar por categoría/disciplina: /api/teams?categoryId=xxx&disciplineId=yyy
+      const { categoryId, disciplineId } = req.query as {
+        categoryId?: string;
+        disciplineId?: string;
+      };
+      const teams = await TeamService.findAll(categoryId, disciplineId);
       res.json({ success: true, data: teams });
     } catch (error) {
       next(error);

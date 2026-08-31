@@ -1,18 +1,10 @@
 import type { Match } from "../../api/matches.api";
+import { getIncidentLabel } from "../../utils/incidentLabels";
 
 type Props = { match: Match };
 
-const INCIDENT_LABELS: Record<string, string> = {
-  GOAL: "⚽ Gol",
-  YELLOW_CARD: "🟨 Tarjeta amarilla",
-  RED_CARD: "🟥 Tarjeta roja",
-  CORNER: "🚩 Corner",
-  FOUL: "⚠️ Falta",
-  SUBSTITUTION: "🔄 Cambio",
-  NOTE: "📝 Nota",
-};
-
 export default function StepReport({ match }: Props) {
+  const disciplineName = match.homeTeam.discipline?.name;
   const homeValidations = match.validations.filter(v => v.teamSide === "HOME");
   const awayValidations = match.validations.filter(v => v.teamSide === "AWAY");
   const homeIncidents = match.incidents.filter(i => i.teamSide === "HOME");
@@ -144,7 +136,7 @@ export default function StepReport({ match }: Props) {
                 {match.incidents.map(inc => (
                   <tr key={inc.id} className="border-b border-gray-200">
                     <td className="py-1">{inc.minute ?? "—"}</td>
-                    <td className="py-1">{INCIDENT_LABELS[inc.type]}</td>
+                    <td className="py-1">{getIncidentLabel(inc.type, disciplineName)}</td>
                     <td className="py-1">
                       {inc.teamSide === "HOME"
                         ? match.homeTeam.name

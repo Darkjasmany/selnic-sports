@@ -7,9 +7,10 @@ type CategoryParams = {
 };
 
 export class CategoryController {
-  static gellAll = async (_req: Request, res: Response, next: NextFunction) => {
+  static gellAll = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const category = await CategoryService.findAll();
+      const disciplineId = (req.query.disciplineId as string) || undefined;
+      const category = await CategoryService.findAll(disciplineId);
       res.json({ success: true, data: category });
     } catch (error) {
       next(error);

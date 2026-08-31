@@ -4,16 +4,20 @@ import { handleError } from "@/api/utils";
 export type Team = {
   id: string;
   name: string;
+  disciplineId: string;
   categoryId: string;
   location?: string;
   managerPhone?: string;
   coachName?: string;
   category: { id: string; name: string };
+  discipline?: { id: string; name: string };
+  stats?: { active: number; total: number };
   _count: { players: number };
 };
 
 export type CreateTeamInput = {
   name: string;
+  disciplineId: string;
   categoryId: string;
   location?: string;
   managerPhone?: string;
@@ -22,9 +26,14 @@ export type CreateTeamInput = {
 
 export type UpdateTeamInput = Partial<CreateTeamInput>;
 
-export async function getTeams(categoryId?: string): Promise<Team[]> {
+export async function getTeams(
+  categoryId?: string,
+  disciplineId?: string
+): Promise<Team[]> {
   try {
-    const params = categoryId ? { categoryId } : {};
+    const params: Record<string, string> = {};
+    if (categoryId) params.categoryId = categoryId;
+    if (disciplineId) params.disciplineId = disciplineId;
     const { data } = await api.get("/teams", { params });
     return data.data;
   } catch (error) {

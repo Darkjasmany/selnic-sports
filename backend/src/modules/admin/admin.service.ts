@@ -1,7 +1,7 @@
 import { prisma } from "@/config/database";
 import { AppError } from "@/middlewares/error.middleware";
 import bcrypt from "bcryptjs";
-import { ChangePasswordInput, CreateUserInput, UpdateUserInput } from "./admin.shema";
+import { ChangePasswordInput, CreateUserInput, UpdateUserInput } from "./admin.schema";
 
 const userSelect = {
   id: true,

@@ -1,7 +1,7 @@
 {
-  "name": "futbol-backend",
+  "name": "selnic-sports-backend",
   "version": "1.0.0",
-  "description": "Sistema de registro de jugadores de fútbol",
+  "description": "Sistema de gestión deportiva (SelNic Sports)",
   "main": "dist/server.js",
   "scripts": {
     "dev": "tsx --env-file=.env --watch src/server.ts",

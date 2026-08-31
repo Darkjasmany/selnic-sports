@@ -1,4 +1,5 @@
 import { FaceCapture } from "@/features/biometric";
+import { useDisciplines } from "@/features/disciplines/hooks/useDisciplines";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -17,11 +18,17 @@ import {
 
 const PlayersPage = () => {
   const [search, setSearch] = useState("");
+  const [disciplineId, setDisciplineId] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingPlayer, setEditingPlayer] = useState<Player | null>(null);
   const navigate = useNavigate();
 
-  const { data: players = [], isLoading } = usePlayers(search || undefined);
+  const { data: disciplines = [] } = useDisciplines();
+  const { data: players = [], isLoading } = usePlayers(
+    search || undefined,
+    undefined,
+    disciplineId || undefined
+  );
   const createPlayer = useCreatePlayer();
   const updatePlayer = useUpdatePlayer();
   const deletePlayer = useDeletePlayer();
@@ -99,7 +106,7 @@ const PlayersPage = () => {
       </div>
 
       <div className="bg-slate-900 border border-slate-800 rounded-xl">
-        <div className="p-4 border-b border-slate-800">
+        <div className="p-4 border-b border-slate-800 flex flex-wrap gap-3">
           <input
             type="text"
             placeholder="Buscar por nombre o cédula..."
@@ -107,6 +114,18 @@ const PlayersPage = () => {
             onChange={e => setSearch(e.target.value)}
             className="w-full max-w-sm h-10 px-3 rounded-lg bg-slate-800 border  border-slate-700 text-white text-sm placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500 transition"
           />
+          <select
+            className="h-10 px-3 rounded-lg bg-slate-800 border border-slate-700 text-white text-sm focus:ring-2 focus:ring-sky-500 outline-none"
+            value={disciplineId}
+            onChange={e => setDisciplineId(e.target.value)}
+          >
+            <option value="">Todas las disciplinas</option>
+            {disciplines.map(d => (
+              <option key={d.id} value={d.id}>
+                {d.name}
+              </option>
+            ))}
+          </select>
         </div>
 
         <PlayerTable

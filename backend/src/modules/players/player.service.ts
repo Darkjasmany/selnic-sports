@@ -3,12 +3,13 @@ import { AppError } from "@/middlewares/error.middleware";
 import { CreatePlayerInput, SaveBiometricInput, UpdatePlayerInput } from "./player.schema";
 
 export class PlayerService {
-  static async findAll(search?: string, teamId?: string) {
+  static async findAll(search?: string, teamId?: string, disciplineId?: string) {
     return prisma.player.findMany({
       where: {
         // isActive: true;
         AND: [
           teamId ? { teams: { some: { teamId, isActive: true } } } : {},
+          disciplineId ? { disciplineId } : {},
           search
             ? {
                 OR: [
@@ -71,14 +72,20 @@ export class PlayerService {
     const team = await prisma.team.findUnique({ where: { id: teamId } });
     if (!team) throw new AppError(404, "Equipo no encontrado");
 
-    return prisma.player.create({
-      data: {
-        ...playerData,
-        birthDate: new Date(playerData.birthDate),
-        teams: {
-          create: { teamId },
-        },
+    if (playerData.disciplineId && team.disciplineId !== playerData.disciplineId)
+      throw new AppError(400, "La disciplina del jugador no coincide con la del equipo");
+
+    const createData: any = {
+      ...playerData,
+      disciplineId: playerData.disciplineId ?? team.disciplineId,
+      birthDate: new Date(playerData.birthDate),
+      teams: {
+        create: { teamId },
       },
+    };
+
+    return prisma.player.create({
+      data: createData,
       include: {
         teams: {
           include: {
@@ -111,6 +118,12 @@ export class PlayerService {
     }
 
     if (teamId) {
+      const newTeam = await prisma.team.findUnique({ where: { id: teamId } });
+      if (!newTeam) throw new AppError(404, "Equipo no encontrado");
+      if (playerData.disciplineId && newTeam.disciplineId !== playerData.disciplineId)
+        throw new AppError(400, "La disciplina del jugador no coincide con la del equipo");
+      if (!updateData.disciplineId) updateData.disciplineId = newTeam.disciplineId;
+
       await prisma.teamPlayer.updateMany({
         where: { playerId: id, isActive: true },
         data: { isActive: false },

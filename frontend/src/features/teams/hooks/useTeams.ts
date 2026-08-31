@@ -16,10 +16,10 @@ import { CATEGORIES_KEY } from "@/features/categories/hooks/useCategories";
 
 export const TEAMS_KEY = "teams";
 
-export function useTeams(categoryId?: string) {
+export function useTeams(categoryId?: string, disciplineId?: string) {
   return useQuery({
-    queryKey: [TEAMS_KEY, categoryId],
-    queryFn: () => getTeams(categoryId),
+    queryKey: [TEAMS_KEY, categoryId, disciplineId],
+    queryFn: () => getTeams(categoryId, disciplineId),
   });
 }
 

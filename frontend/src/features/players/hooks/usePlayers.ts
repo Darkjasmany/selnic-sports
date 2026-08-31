@@ -17,10 +17,10 @@ export const PLAYERS_KEY = "players";
 
 // QueryClient (El "Cerebro de la Caché") Es el objeto central que maneja toda la memoria de tu aplicación. Imagina que es una bodega donde se guardan todas las respuestas de la API. Cuando usas const queryClient = useQueryClient(), estás pidiendo la llave de esa bodega para poder manipular lo que hay dentro.
 
-export function usePlayers(search?: string, teamId?: string) {
+export function usePlayers(search?: string, teamId?: string, disciplineId?: string) {
   return useQuery({
-    queryKey: [PLAYERS_KEY, search, teamId],
-    queryFn: () => getPlayers(search, teamId),
+    queryKey: [PLAYERS_KEY, search, teamId, disciplineId],
+    queryFn: () => getPlayers(search, teamId, disciplineId),
   });
 }
 

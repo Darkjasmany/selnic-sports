@@ -1,3 +1,4 @@
+import { useDisciplines } from "@/features/disciplines/hooks/useDisciplines";
 import { useState } from "react";
 import type { Team } from "../api/teams.api";
 import TeamForm from "../components/TeamForm";
@@ -5,12 +6,17 @@ import TeamModal from "../components/TeamModal";
 import TeamTable from "../components/TeamTable";
 import { useCreateTeam, useDeleteTeam, useTeams, useUpdateTeam } from "../hooks/useTeams";
 
+const inputClass =
+  "h-10 px-3 rounded-lg bg-slate-800 border border-slate-700 text-white text-sm focus:ring-2 focus:ring-sky-500 outline-none";
+
 const TeamsPage = () => {
   const [search, setSearch] = useState("");
+  const [disciplineId, setDisciplineId] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTeam, setEditingTeam] = useState<Team | null>(null);
 
-  const { data: teams = [], isLoading } = useTeams();
+  const { data: disciplines = [] } = useDisciplines();
+  const { data: teams = [], isLoading } = useTeams(undefined, disciplineId || undefined);
   const createTeam = useCreateTeam();
   const updateTeam = useUpdateTeam();
   const deleteTeam = useDeleteTeam();
@@ -66,7 +72,7 @@ const TeamsPage = () => {
       </div>
 
       <div className="bg-slate-900 border border-slate-800 rounded-xl">
-        <div className="p-4 border-b border-slate-800">
+        <div className="p-4 border-b border-slate-800 flex flex-wrap gap-3">
           <input
             type="text"
             placeholder="Buscar por nombre o categoría..."
@@ -76,6 +82,18 @@ const TeamsPage = () => {
                        border-slate-700 text-white text-sm placeholder:text-slate-500
                        focus:outline-none focus:ring-2 focus:ring-sky-500 transition"
           />
+          <select
+            className={inputClass}
+            value={disciplineId}
+            onChange={e => setDisciplineId(e.target.value)}
+          >
+            <option value="">Todas las disciplinas</option>
+            {disciplines.map(d => (
+              <option key={d.id} value={d.id}>
+                {d.name}
+              </option>
+            ))}
+          </select>
         </div>
 
         <TeamTable
