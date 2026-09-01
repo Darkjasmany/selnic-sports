@@ -11,6 +11,7 @@
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
     "db:seed": "tsx --env-file=.env prisma/seed.ts",
+    "db:seed:demo": "tsx --env-file=.env prisma/seed-demo.ts",
     "test": "vitest",
     "test:ui": "vitest --ui",
     "lint": "eslint src",

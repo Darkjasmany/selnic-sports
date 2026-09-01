@@ -42,7 +42,7 @@ export function isSamePerson(distance: number, threshold = 0.55): boolean {
  * faceRecognitionNet: Es el más importante para ti; permite convertir el rostro en un "descriptor" (una lista de números) para poder compararlo con el que ya tienes guardado.
  */
 export async function loadFaceApiModels(faceapi: any): Promise<void> {
-  const MODEL_URL = "/models";
+  const MODEL_URL = `${import.meta.env.BASE_URL}models`;
   try {
     await Promise.all([
       faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL),
