@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 const nameValidation = z
-  .string({ required_error: "El nombre es requerido" })
+  .string({ error: "El nombre es requerido" })
   .min(2, "Mínimo 2 caracteres")
   .max(50, "Máximo 50 caracteres")
   .trim();

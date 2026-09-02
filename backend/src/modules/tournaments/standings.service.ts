@@ -29,6 +29,7 @@ export class StandingsService {
         goalsFor: tg.goalsFor,
         goalsAgainst: tg.goalsAgainst,
         goalDifference: tg.goalsFor - tg.goalsAgainst,
+        position: 0,
       }))
       .sort((a, b) => {
         // Puntos, luego diferencia de goles, luego goles a favor
@@ -36,10 +37,8 @@ export class StandingsService {
         if (b.goalDifference !== a.goalDifference)
           return b.goalDifference - a.goalDifference;
         return b.goalsFor - a.goalsFor;
-      });
-
-    // Asignar posición
-    standings.forEach((s, i) => (s["position"] = i + 1));
+      })
+      .map((s, i) => ({ ...s, position: i + 1 }));
 
     return {
       group: { id: group.id, name: group.name },

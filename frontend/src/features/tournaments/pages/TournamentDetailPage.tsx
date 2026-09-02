@@ -38,6 +38,36 @@ const TournamentDetailPage = () => {
     { label: "Máximo asistidor", value: stats?.topAssister?.name ?? "—" },
   ];
 
+  // Grupos a mostrar en "Grupos y posiciones".
+  // - Si hay standings calculados (partidos jugados), se muestran con posición/estadísticas.
+  // - Si no, se muestran igualmente los equipos asignados a cada grupo desde
+  //   tournament.groups[].teamGroups. Esto permite ver los equipos aunque el
+  //   torneo se haya creado en modo SEMI_AUTOMATIC/MANUAL o aún no haya partidos.
+  const standingsByGroupId = new Map(
+    (standings ?? []).map(g => [g.group.id, g])
+  );
+  const displayGroups = (tournament?.groups ?? []).map((group: any) => {
+    const st = standingsByGroupId.get(group.id);
+    if (st && st.standings.length > 0) return st;
+    const teamGroups = group.teamGroups ?? [];
+    return {
+      group: { id: group.id, name: group.name },
+      standings: teamGroups.map((tg: any, i: number) => ({
+        position: i + 1,
+        teamId: tg.teamId,
+        teamName: tg.team?.name ?? "",
+        plays: tg.wins + tg.draws + tg.losses,
+        wins: tg.wins,
+        draws: tg.draws,
+        losses: tg.losses,
+        goalsFor: tg.goalsFor,
+        goalsAgainst: tg.goalsAgainst,
+        goalDifference: tg.goalsFor - tg.goalsAgainst,
+        points: tg.points,
+      })),
+    };
+  });
+
   const tabs: { key: Tab; label: string }[] = [
     { key: "groups", label: "Grupos y posiciones" },
     { key: "bracket", label: "Bracket (árbol)" },
@@ -73,7 +103,7 @@ const TournamentDetailPage = () => {
 
       {tab === "groups" && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {standings?.map((g: any) => (
+          {displayGroups.map((g: any) => (
             <div
               key={g.group.id}
               className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden"
@@ -122,7 +152,7 @@ const TournamentDetailPage = () => {
               </table>
             </div>
           ))}
-          {(!standings || standings.length === 0) && (
+          {displayGroups.length === 0 && (
             <p className="text-slate-500 col-span-2">
               No hay grupos configurados todavía
             </p>

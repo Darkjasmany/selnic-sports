@@ -113,9 +113,6 @@ export class MatchService {
       data: {
         ...input,
         scheduledAt: new Date(input.scheduledAt),
-        scheduledTime: input.scheduledTime
-          ? new Date(input.scheduledTime)
-          : undefined,
         status: "VALIDATING_PLAYERS",
       },
       include: matchInclude,
@@ -214,13 +211,18 @@ export class MatchService {
 
       if (input.incidents.length > 0) {
         await tx.matchIncident.createMany({
-          data: input.incidents.map(inc => ({
-            matchId,
-            ...inc,
-            teamId:
-              inc.teamId ??
-              (inc.teamSide === "HOME" ? match.homeTeamId : match.awayTeamId),
-          })),
+          data: input.incidents.map(inc => {
+            // `teamSide` es solo una instrucción de la API para derivar el teamId;
+            // el modelo MatchIncident no tiene esa columna, por eso se separa.
+            const { teamSide, ...rest } = inc;
+            return {
+              matchId,
+              ...rest,
+              teamId:
+                inc.teamId ??
+                (teamSide === "HOME" ? match.homeTeamId : match.awayTeamId),
+            };
+          }),
         });
       }
 

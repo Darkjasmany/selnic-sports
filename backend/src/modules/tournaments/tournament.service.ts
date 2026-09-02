@@ -30,7 +30,7 @@ const tournamentInclude = {
       homeScore: true,
       awayScore: true,
     },
-    orderBy: { scheduledAt: "asc" },
+    orderBy: { scheduledAt: "asc" as const },
   },
   _count: { select: { groups: true, matches: true } },
 };

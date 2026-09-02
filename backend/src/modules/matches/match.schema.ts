@@ -3,16 +3,16 @@ import { z } from "zod";
 export const createMatchSchema = z
   .object({
     homeTeamId: z
-      .string({ required_error: "El equipo local es requerido" })
+      .string({ error: "El equipo local es requerido" })
       .cuid("ID inválido"),
     awayTeamId: z
-      .string({ required_error: "El equipo visitante es requerido" })
+      .string({ error: "El equipo visitante es requerido" })
       .cuid("ID inválido"),
     categoryId: z
-      .string({ required_error: "La categoría es requerida" })
+      .string({ error: "La categoría es requerida" })
       .cuid("ID inválido"),
     scheduledAt: z
-      .string({ required_error: "La fecha es requerida" })
+      .string({ error: "La fecha es requerida" })
       .refine(date => !isNaN(Date.parse(date)), { message: "Fecha inválida" }),
     notes: z.string().optional(),
     // Nuevos campos para torneos

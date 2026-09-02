@@ -172,6 +172,7 @@ export class StatisticsService {
       include: {
         homeTeam: { select: { id: true, name: true } },
         awayTeam: { select: { id: true, name: true } },
+        group: { select: { id: true, name: true } },
       },
       orderBy: { phase: "asc" },
     });

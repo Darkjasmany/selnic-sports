@@ -72,7 +72,7 @@ export class PlayerController {
     next: NextFunction
   ) => {
     try {
-      const player = PlayerService.saveBiometric(req.params.id, req.body);
+      const player = await PlayerService.saveBiometric(req.params.id, req.body);
       res.json({ success: true, data: player });
     } catch (error) {
       next(error);

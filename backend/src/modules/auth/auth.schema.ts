@@ -2,13 +2,13 @@ import { z } from "zod";
 
 // Validaciones reutilizables
 const emailValidation = z
-  .string({ required_error: "El email es requerido" })
+  .string({ error: "El email es requerido" })
   .email("Email inválido")
   .toLowerCase()
   .trim();
 
 const passwordValidation = z
-  .string({ required_error: "La contraseña es requerida" })
+  .string({ error: "La contraseña es requerida" })
   .min(8, "Mínimo 8 caracteres")
   .trim();
 
@@ -22,7 +22,7 @@ export const loginSchema = z.object({
 export const registerSchema = z.object({
   name: z
     .string({
-      required_error: "El nombre es requerido",
+      error: "El nombre es requerido",
     })
     .min(2, "Mínimo 2 caracteres")
     .trim(),
@@ -34,7 +34,7 @@ export const registerSchema = z.object({
 // Schema para cambiar password
 export const changePasswordSchema = z
   .object({
-    currentPassword: z.string({ required_error: "La contraseña actual es requerida" }),
+    currentPassword: z.string({ error: "La contraseña actual es requerida" }),
     newPassword: passwordValidation,
     confirmPassword: passwordValidation,
   })
